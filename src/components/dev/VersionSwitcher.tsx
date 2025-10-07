@@ -81,14 +81,18 @@ export function VersionSwitcher() {
             className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 shadow-lg"
           >
             <GitBranch className="h-4 w-4 mr-2" />
-            Version Control
+            Versions
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-96 max-h-96 overflow-y-auto">
-          <DropdownMenuLabel className="flex items-center gap-2">
+        <DropdownMenuContent
+          align="end"
+          className="w-[90vw] max-w-md max-h-[60vh] overflow-y-auto mb-2"
+          style={{ bottom: '100%', top: 'auto' }}
+        >
+          <DropdownMenuLabel className="flex items-center gap-2 sticky top-0 bg-[#2d4a4a] z-10">
             <GitBranch className="h-4 w-4" />
-            Git Versions
+            Git Version History
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
@@ -102,11 +106,11 @@ export function VersionSwitcher() {
                 key={commit.hash}
                 onClick={() => switchVersion(commit.hash)}
                 disabled={loading}
-                className={`flex flex-col items-start gap-1 px-3 py-2 ${
+                className={`flex flex-col items-start gap-1 px-3 py-2 cursor-pointer ${
                   commit.hash === currentCommit ? 'bg-blue-500/10' : ''
                 }`}
               >
-                <div className="flex items-center gap-2 w-full">
+                <div className="flex items-center gap-2 w-full flex-wrap">
                   <code className="text-xs font-mono bg-gray-800 px-2 py-0.5 rounded">
                     {commit.shortHash}
                   </code>
@@ -117,7 +121,7 @@ export function VersionSwitcher() {
                   )}
                   <RotateCcw className="h-3 w-3 ml-auto" />
                 </div>
-                <div className="text-sm font-medium">{commit.message}</div>
+                <div className="text-sm font-medium break-words w-full">{commit.message}</div>
                 <div className="text-xs text-gray-500">
                   {commit.date} • {commit.author}
                 </div>
