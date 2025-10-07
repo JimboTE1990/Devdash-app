@@ -73,9 +73,10 @@ export function VersionSwitcher() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2">
+      {/* Dropdown Menu */}
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger>
           <Button
             variant="outline"
             className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800 shadow-lg"
@@ -86,18 +87,16 @@ export function VersionSwitcher() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          align="end"
-          className="w-[90vw] max-w-md max-h-[60vh] overflow-y-auto mb-2"
-          style={{ bottom: '100%', top: 'auto' }}
+          className="w-[min(400px,90vw)] max-h-[min(500px,60vh)] overflow-y-auto !-mt-[calc(100%+3.5rem)]"
         >
-          <DropdownMenuLabel className="flex items-center gap-2 sticky top-0 bg-[#2d4a4a] z-10">
+          <DropdownMenuLabel className="flex items-center gap-2 sticky top-0 bg-[#2d4a4a] z-10 border-b border-[#4a6a6a]">
             <GitBranch className="h-4 w-4" />
-            Git Version History
+            Git Commits ({commits.length})
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
           {commits.length === 0 ? (
-            <div className="px-2 py-4 text-sm text-gray-500 text-center">
+            <div className="px-2 py-4 text-sm text-gray-400 text-center">
               No commits found
             </div>
           ) : (
@@ -106,23 +105,23 @@ export function VersionSwitcher() {
                 key={commit.hash}
                 onClick={() => switchVersion(commit.hash)}
                 disabled={loading}
-                className={`flex flex-col items-start gap-1 px-3 py-2 cursor-pointer ${
-                  commit.hash === currentCommit ? 'bg-blue-500/10' : ''
-                }`}
+                className={`flex flex-col items-start gap-1 px-3 py-2.5 cursor-pointer ${
+                  commit.hash === currentCommit ? 'bg-blue-500/10 border-l-2 border-blue-500' : ''
+                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <div className="flex items-center gap-2 w-full flex-wrap">
-                  <code className="text-xs font-mono bg-gray-800 px-2 py-0.5 rounded">
+                  <code className="text-xs font-mono bg-gray-900 px-2 py-0.5 rounded">
                     {commit.shortHash}
                   </code>
                   {commit.hash === currentCommit && (
-                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">
-                      Current
+                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-medium">
+                      ● Current
                     </span>
                   )}
-                  <RotateCcw className="h-3 w-3 ml-auto" />
+                  <RotateCcw className="h-3 w-3 ml-auto text-gray-400" />
                 </div>
-                <div className="text-sm font-medium break-words w-full">{commit.message}</div>
-                <div className="text-xs text-gray-500">
+                <div className="text-sm font-medium break-words w-full text-white">{commit.message}</div>
+                <div className="text-xs text-gray-400">
                   {commit.date} • {commit.author}
                 </div>
               </DropdownMenuItem>
