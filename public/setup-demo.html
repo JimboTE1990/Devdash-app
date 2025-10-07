@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup Demo Account</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a3a3a;
+            color: white;
+        }
+        .success {
+            background: #2d4a4a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #7dd87d;
+        }
+        button {
+            background: #7dd87d;
+            color: #1a3a3a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #6cc76c;
+        }
+        .info {
+            background: #2d4a4a;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        code {
+            background: #1a3a3a;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DevDash Demo Account Setup</h1>
+
+    <div class="info">
+        <p>Click the button below to create a demo account in your browser's localStorage.</p>
+    </div>
+
+    <button onclick="setupDemo()">Create Demo Account</button>
+
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script>
+        function setupDemo() {
+            const now = new Date();
+            const trialEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+            const demoUser = {
+                uid: 'demo123',
+                email: 'demo@devdash.com',
+                password: 'demo123',
+                firstName: 'Demo',
+                lastName: 'User',
+                plan: 'premium',
+                trialStartDate: now.toISOString(),
+                trialEndDate: trialEndDate.toISOString(),
+                createdAt: now.toISOString()
+            };
+
+            // Get existing users or create empty array
+            let users = [];
+            try {
+                const existing = localStorage.getItem('devdash_users');
+                if (existing) {
+                    users = JSON.parse(existing);
+                }
+            } catch (e) {
+                console.error('Error reading users:', e);
+            }
+
+            // Remove any existing demo user
+            users = users.filter(u => u.email !== 'demo@devdash.com');
+
+            // Add new demo user
+            users.push(demoUser);
+
+            // Save to localStorage
+            localStorage.setItem('devdash_users', JSON.stringify(users));
+
+            // Show success message
+            document.getElementById('result').innerHTML = `
+                <div class="success">
+                    <h2>✅ Demo Account Created!</h2>
+                    <p><strong>Email:</strong> <code>demo@devdash.com</code></p>
+                    <p><strong>Password:</strong> <code>demo123</code></p>
+                    <p><strong>Plan:</strong> Premium</p>
+                    <p><strong>Trial Ends:</strong> ${trialEndDate.toLocaleDateString()}</p>
+                    <br>
+                    <p>You can now <a href="/" style="color: #7dd87d;">return to DevDash</a> and login with these credentials!</p>
+                </div>
+            `;
+        }
+
+        // Auto-setup on page load
+        window.addEventListener('load', function() {
+            // Check if already set up
+            try {
+                const users = JSON.parse(localStorage.getItem('devdash_users') || '[]');
+                const hasDemo = users.some(u => u.email === 'demo@devdash.com');
+                if (hasDemo) {
+                    document.getElementById('result').innerHTML = `
+                        <div class="info">
+                            <p>✓ Demo account already exists. You can login with:</p>
+                            <p><strong>Email:</strong> <code>demo@devdash.com</code></p>
+                            <p><strong>Password:</strong> <code>demo123</code></p>
+                            <p><a href="/" style="color: #7dd87d;">Go to DevDash</a></p>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                console.error('Error checking users:', e);
+            }
+        });
+    </script>
+</body>
+</html>

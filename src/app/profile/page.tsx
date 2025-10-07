@@ -127,25 +127,49 @@ export default function ProfilePage() {
             </div>
             <div>
               <Label>Plan</Label>
-              <div className="mt-1">
+              <div className="mt-1 flex items-center gap-2">
                 <Badge variant={user.plan === 'premium' ? 'default' : 'secondary'}>
                   {user.plan === 'premium' ? 'Premium' : 'Free'}
                 </Badge>
+                {user.plan !== 'premium' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => router.push('/pricing')}
+                  >
+                    Upgrade to Premium
+                  </Button>
+                )}
               </div>
             </div>
             {isTrialActive && user.trialEndDate && (
               <div>
-                <Label>Trial Period</Label>
+                <Label>Free Trial Status</Label>
                 <p className="text-white mt-1">
-                  Ends on {formatDate(user.trialEndDate)}
+                  Active until {formatDate(user.trialEndDate)}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">
+                  {Math.ceil((user.trialEndDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days remaining
                 </p>
               </div>
             )}
             {user.plan === 'premium' && user.subscriptionStartDate && (
               <div>
-                <Label>Subscription Started</Label>
+                <Label>Premium Subscription</Label>
                 <p className="text-white mt-1">
-                  {formatDate(user.subscriptionStartDate)}
+                  Active since {formatDate(user.subscriptionStartDate)}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">
+                  £9.99/month - Renews monthly
+                </p>
+              </div>
+            )}
+            {!isTrialActive && user.plan === 'free' && (
+              <div>
+                <Label>Plan Status</Label>
+                <p className="text-white mt-1">Free plan</p>
+                <p className="text-sm text-yellow-400 mt-1">
+                  Trial expired. Upgrade to Premium for full access.
                 </p>
               </div>
             )}

@@ -1,22 +1,10 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import {
-  User as FirebaseUser,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  sendPasswordResetEmail,
-  updatePassword as firebaseUpdatePassword,
-} from 'firebase/auth'
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
 import { User } from '@/lib/types'
 
 interface AuthContextType {
   user: User | null
-  firebaseUser: FirebaseUser | null
   loading: boolean
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>
   login: (email: string, password: string) => Promise<void>
@@ -39,38 +27,27 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Fetch user data from Firestore
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
-        if (userDoc.exists()) {
-          const userData = userDoc.data()
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email!,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            plan: userData.plan || 'free',
-            trialStartDate: userData.trialStartDate?.toDate(),
-            trialEndDate: userData.trialEndDate?.toDate(),
-            subscriptionStartDate: userData.subscriptionStartDate?.toDate(),
-            createdAt: userData.createdAt?.toDate(),
-          })
-        }
-        setFirebaseUser(firebaseUser)
-      } else {
-        setUser(null)
-        setFirebaseUser(null)
+    // Check localStorage for existing session
+    const storedUser = localStorage.getItem('devdash_user')
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser)
+        // Convert date strings back to Date objects
+        if (userData.trialStartDate) userData.trialStartDate = new Date(userData.trialStartDate)
+        if (userData.trialEndDate) userData.trialEndDate = new Date(userData.trialEndDate)
+        if (userData.subscriptionStartDate) userData.subscriptionStartDate = new Date(userData.subscriptionStartDate)
+        if (userData.createdAt) userData.createdAt = new Date(userData.createdAt)
+        setUser(userData)
+      } catch (error) {
+        console.error('Failed to parse stored user:', error)
+        localStorage.removeItem('devdash_user')
       }
-      setLoading(false)
-    })
-
-    return unsubscribe
+    }
+    setLoading(false)
   }, [])
 
   const register = async (
@@ -79,12 +56,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     firstName: string,
     lastName: string
   ) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // Check if user already exists
+    const users = JSON.parse(localStorage.getItem('devdash_users') || '[]')
+    if (users.find((u: any) => u.email === email)) {
+      throw new Error('User already exists')
+    }
+
     const now = new Date()
     const trialEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
 
-    // Create user document in Firestore
-    await setDoc(doc(db, 'users', userCredential.user.uid), {
+    const userData: User = {
+      uid: Math.random().toString(36).substring(7),
       email,
       firstName,
       lastName,
@@ -92,34 +77,84 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       trialStartDate: now,
       trialEndDate,
       createdAt: now,
-    })
+    }
+
+    // Store user with password in users list
+    users.push({ ...userData, password })
+    localStorage.setItem('devdash_users', JSON.stringify(users))
+
+    // Store current user session
+    setUser(userData)
+    localStorage.setItem('devdash_user', JSON.stringify(userData))
   }
 
   const login = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password)
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    const users = JSON.parse(localStorage.getItem('devdash_users') || '[]')
+    const existingUser = users.find((u: any) => u.email === email && u.password === password)
+
+    if (!existingUser) {
+      throw new Error('Invalid email or password')
+    }
+
+    const userData: User = {
+      uid: existingUser.uid,
+      email: existingUser.email,
+      firstName: existingUser.firstName,
+      lastName: existingUser.lastName,
+      plan: existingUser.plan || 'free',
+      trialStartDate: existingUser.trialStartDate ? new Date(existingUser.trialStartDate) : undefined,
+      trialEndDate: existingUser.trialEndDate ? new Date(existingUser.trialEndDate) : undefined,
+      subscriptionStartDate: existingUser.subscriptionStartDate ? new Date(existingUser.subscriptionStartDate) : undefined,
+      createdAt: existingUser.createdAt ? new Date(existingUser.createdAt) : new Date(),
+    }
+
+    setUser(userData)
+    localStorage.setItem('devdash_user', JSON.stringify(userData))
   }
 
   const logout = async () => {
-    await signOut(auth)
+    await new Promise(resolve => setTimeout(resolve, 300))
+    setUser(null)
+    localStorage.removeItem('devdash_user')
   }
 
   const resetPassword = async (email: string) => {
-    await sendPasswordResetEmail(auth, email)
+    await new Promise(resolve => setTimeout(resolve, 500))
+    // In local mode, just simulate success
+    alert(`Password reset email sent to: ${email}\n(This is a demo - no email was actually sent)`)
   }
 
   const updatePassword = async (newPassword: string) => {
-    if (firebaseUser) {
-      await firebaseUpdatePassword(firebaseUser, newPassword)
+    if (!user) return
+
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // Update password in users list
+    const users = JSON.parse(localStorage.getItem('devdash_users') || '[]')
+    const userIndex = users.findIndex((u: any) => u.uid === user.uid)
+    if (userIndex !== -1) {
+      users[userIndex].password = newPassword
+      localStorage.setItem('devdash_users', JSON.stringify(users))
     }
   }
 
   const updateProfile = async (firstName: string, lastName: string) => {
-    if (user) {
-      await updateDoc(doc(db, 'users', user.uid), {
-        firstName,
-        lastName,
-      })
-      setUser({ ...user, firstName, lastName })
+    if (!user) return
+
+    const updatedUser = { ...user, firstName, lastName }
+    setUser(updatedUser)
+    localStorage.setItem('devdash_user', JSON.stringify(updatedUser))
+
+    // Update in users list
+    const users = JSON.parse(localStorage.getItem('devdash_users') || '[]')
+    const userIndex = users.findIndex((u: any) => u.uid === user.uid)
+    if (userIndex !== -1) {
+      users[userIndex].firstName = firstName
+      users[userIndex].lastName = lastName
+      localStorage.setItem('devdash_users', JSON.stringify(users))
     }
   }
 
@@ -134,7 +169,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     user,
-    firebaseUser,
     loading,
     register,
     login,
