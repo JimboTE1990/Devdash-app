@@ -14,10 +14,20 @@ interface BoardProps {
 export function Board({ board, onUpdateBoard }: BoardProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [draggedTask, setDraggedTask] = useState<Task | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
 
   const handleDragStart = (e: React.DragEvent, task: Task) => {
     setDraggedTask(task)
+    setIsDragging(true)
     e.dataTransfer.effectAllowed = 'move'
+    // Set custom drag image with transparency
+    if (e.currentTarget instanceof HTMLElement) {
+      const dragImage = e.currentTarget.cloneNode(true) as HTMLElement
+      dragImage.style.opacity = '0.5'
+      document.body.appendChild(dragImage)
+      e.dataTransfer.setDragImage(dragImage, 0, 0)
+      setTimeout(() => document.body.removeChild(dragImage), 0)
+    }
   }
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -33,19 +43,28 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
     e.preventDefault()
     if (!draggedTask) return
 
-    const updatedTasks = board.tasks.map((task) =>
-      task.id === draggedTask.id
-        ? { ...task, columnId, swimlaneId, updatedAt: new Date() }
-        : task
-    )
+    // Only update if the task is actually moving to a different location
+    if (draggedTask.columnId !== columnId || draggedTask.swimlaneId !== swimlaneId) {
+      const updatedTasks = board.tasks.map((task) =>
+        task.id === draggedTask.id
+          ? { ...task, columnId, swimlaneId, updatedAt: new Date() }
+          : task
+      )
 
-    onUpdateBoard({
-      ...board,
-      tasks: updatedTasks,
-      updatedAt: new Date(),
-    })
+      onUpdateBoard({
+        ...board,
+        tasks: updatedTasks,
+        updatedAt: new Date(),
+      })
+    }
 
     setDraggedTask(null)
+    setIsDragging(false)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedTask(null)
+    setIsDragging(false)
   }
 
   const handleToggleCollapse = (swimlaneId: string) => {

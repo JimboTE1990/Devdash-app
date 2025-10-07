@@ -16,6 +16,7 @@ interface TaskCardProps {
 export function TaskCard({ task, onClick, onDragStart }: TaskCardProps) {
   const completedSubtasks = task.subtasks.filter((st) => st.completed).length
   const totalSubtasks = task.subtasks.length
+  const [isDragging, setIsDragging] = React.useState(false)
 
   const getPriorityColor = (priority?: string) => {
     switch (priority) {
@@ -30,12 +31,26 @@ export function TaskCard({ task, onClick, onDragStart }: TaskCardProps) {
     }
   }
 
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true)
+    onDragStart(e)
+  }
+
+  const handleDragEnd = () => {
+    setIsDragging(false)
+  }
+
   return (
     <Card
       draggable
-      onDragStart={onDragStart}
-      onClick={onClick}
-      className="p-3 cursor-pointer hover:bg-[#4a6a6a] transition-colors"
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onClick={(e) => {
+        if (!isDragging) onClick()
+      }}
+      className={`p-3 cursor-move hover:bg-[#4a6a6a] transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:cursor-grabbing ${
+        isDragging ? 'opacity-50 scale-95' : ''
+      }`}
     >
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-2">
