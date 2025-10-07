@@ -4,6 +4,7 @@ import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import { VersionSwitcher } from '@/components/dev/VersionSwitcher'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,6 +26,7 @@ export default function RootLayout({
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
+            <VersionSwitcher />
           </div>
         </AuthProvider>
       </body>
