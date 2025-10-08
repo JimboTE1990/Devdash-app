@@ -73,14 +73,14 @@ export function Swimlane({
               return (
                 <div
                   key={column.id}
-                  className="w-96 min-w-[384px] shrink-0 min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-150"
+                  className="w-96 min-w-[384px] max-w-[384px] shrink-0 min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-150 overflow-hidden"
                   onDragOver={onDragOver}
                   onDrop={(e) => {
-                    e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'scale-[1.02]', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                    e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
                     onDrop(e, column.id, swimlane.id)
                   }}
                   onDragEnter={(e) => {
-                    e.currentTarget.classList.add('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'scale-[1.02]', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                    e.currentTarget.classList.add('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
                   }}
                   onDragLeave={(e) => {
                     // Only remove if we're actually leaving the drop zone (not just entering a child)
@@ -88,7 +88,7 @@ export function Swimlane({
                     const x = e.clientX
                     const y = e.clientY
                     if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-                      e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'scale-[1.02]', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                      e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
                     }
                   }}
                 >
