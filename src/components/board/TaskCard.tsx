@@ -48,13 +48,13 @@ export function TaskCard({ task, onClick, onDragStart }: TaskCardProps) {
       onClick={(e) => {
         if (!isDragging) onClick()
       }}
-      className={`p-3 cursor-move hover:bg-[#4a6a6a] transition-all duration-200 hover:shadow-lg active:cursor-grabbing w-full max-w-full box-border ${
+      className={`p-3 cursor-move hover:bg-[#4a6a6a] transition-all duration-200 hover:shadow-lg active:cursor-grabbing ${
         isDragging ? 'opacity-50 scale-95' : ''
       }`}
     >
-      <div className="space-y-2 w-full">
+      <div className="space-y-2">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="font-medium text-white text-sm line-clamp-2 break-words flex-1 overflow-hidden">{task.title}</h4>
+          <h4 className="font-medium text-white text-sm line-clamp-2 break-words flex-1">{task.title}</h4>
           {task.priority && (
             <Badge variant={getPriorityColor(task.priority)} className="text-xs shrink-0">
               {task.priority}
