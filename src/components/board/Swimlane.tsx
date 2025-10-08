@@ -73,28 +73,25 @@ export function Swimlane({
               return (
                 <div
                   key={column.id}
-                  className="w-[360px] min-w-[360px] max-w-[360px] shrink-0 min-h-[200px]"
-                >
-                  <div
-                    className="h-full bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-150"
-                    onDragOver={onDragOver}
-                    onDrop={(e) => {
+                  className="w-[360px] min-w-[360px] shrink-0 min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-150"
+                  onDragOver={onDragOver}
+                  onDrop={(e) => {
+                    e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                    onDrop(e, column.id, swimlane.id)
+                  }}
+                  onDragEnter={(e) => {
+                    e.currentTarget.classList.add('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                  }}
+                  onDragLeave={(e) => {
+                    // Only remove if we're actually leaving the drop zone (not just entering a child)
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    const x = e.clientX
+                    const y = e.clientY
+                    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
                       e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
-                      onDrop(e, column.id, swimlane.id)
-                    }}
-                    onDragEnter={(e) => {
-                      e.currentTarget.classList.add('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
-                    }}
-                    onDragLeave={(e) => {
-                      // Only remove if we're actually leaving the drop zone (not just entering a child)
-                      const rect = e.currentTarget.getBoundingClientRect()
-                      const x = e.clientX
-                      const y = e.clientY
-                      if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-                        e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
-                      }
-                    }}
-                  >
+                    }
+                  }}
+                >
                     {columnTasks.length === 0 ? (
                       <div className="flex flex-col items-center justify-center h-32 text-gray-500 text-sm border-2 border-dashed border-[#4a6a6a] rounded gap-2">
                         <span>Drop tasks here</span>
@@ -122,7 +119,6 @@ export function Swimlane({
                         ))}
                       </div>
                     )}
-                  </div>
                 </div>
               )
             })}
