@@ -21,6 +21,8 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [preselectedColumn, setPreselectedColumn] = useState<string>()
   const [preselectedSwimlane, setPreselectedSwimlane] = useState<string>()
+  const headerScrollRef = React.useRef<HTMLDivElement>(null)
+  const contentScrollRef = React.useRef<HTMLDivElement>(null)
 
   const handleDragStart = (e: React.DragEvent, task: Task) => {
     setDraggedTask(task)
@@ -133,52 +135,64 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col overflow-auto">
-        <div className="min-w-min">
-          {/* Column Headers */}
-          <div className="flex gap-4 px-4 py-3 bg-[#1a3a3a] border-b border-[#4a6a6a] sticky top-0 z-10">
-            <div className="w-48 shrink-0 flex items-center">
-              <Button
-                onClick={() => handleOpenCreateDialog()}
-                className="bg-[#7dd87d] text-[#1a3a3a] hover:bg-[#6cc86c] font-semibold"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                New Task
-              </Button>
-            </div>
-            <div className="flex gap-4">
-              {board.columns
-                .sort((a, b) => a.order - b.order)
-                .map((column) => (
-                  <Column
-                    key={column.id}
-                    column={column}
-                  />
-                ))}
-            </div>
-          </div>
-
-          {/* Swimlanes */}
-          <div>
-            {board.swimlanes
-              .sort((a, b) => a.order - b.order)
-              .map((swimlane) => (
-                <Swimlane
-                  key={swimlane.id}
-                  swimlane={swimlane}
-                  columns={board.columns.sort((a, b) => a.order - b.order)}
-                  tasks={board.tasks}
-                  onToggleCollapse={handleToggleCollapse}
-                  onTaskClick={setSelectedTask}
-                  onDragStart={handleDragStart}
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                  onAddTask={handleOpenCreateDialog}
-                />
-              ))}
-          </div>
+    <div className="h-full flex flex-col">
+      {/* Column Headers */}
+      <div
+        ref={headerScrollRef}
+        className="flex gap-4 px-4 py-3 bg-[#1a3a3a] border-b border-[#4a6a6a] overflow-x-auto overflow-y-hidden"
+        onScroll={(e) => {
+          if (contentScrollRef.current) {
+            contentScrollRef.current.scrollLeft = e.currentTarget.scrollLeft
+          }
+        }}
+      >
+        <div className="w-48 shrink-0 flex items-center">
+          <Button
+            onClick={() => handleOpenCreateDialog()}
+            className="bg-[#7dd87d] text-[#1a3a3a] hover:bg-[#6cc86c] font-semibold"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Task
+          </Button>
         </div>
+        <div className="flex gap-4">
+          {board.columns
+            .sort((a, b) => a.order - b.order)
+            .map((column) => (
+              <Column
+                key={column.id}
+                column={column}
+              />
+            ))}
+        </div>
+      </div>
+
+      {/* Swimlanes */}
+      <div
+        ref={contentScrollRef}
+        className="flex-1 overflow-auto"
+        onScroll={(e) => {
+          if (headerScrollRef.current) {
+            headerScrollRef.current.scrollLeft = e.currentTarget.scrollLeft
+          }
+        }}
+      >
+        {board.swimlanes
+          .sort((a, b) => a.order - b.order)
+          .map((swimlane) => (
+            <Swimlane
+              key={swimlane.id}
+              swimlane={swimlane}
+              columns={board.columns.sort((a, b) => a.order - b.order)}
+              tasks={board.tasks}
+              onToggleCollapse={handleToggleCollapse}
+              onTaskClick={setSelectedTask}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onAddTask={handleOpenCreateDialog}
+            />
+          ))}
       </div>
 
       {/* Task Details Dialog */}
