@@ -67,17 +67,23 @@ export function Swimlane({
               return (
                 <div
                   key={column.id}
-                  className="w-80 min-w-[320px] min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-200 hover:border-[#4a7a7a]"
+                  className="w-80 min-w-[320px] min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-150"
                   onDragOver={onDragOver}
                   onDrop={(e) => {
-                    e.currentTarget.classList.remove('border-[#7dd87d]', 'bg-[#7dd87d]/10')
+                    e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'scale-[1.02]', 'shadow-lg', 'shadow-[#7dd87d]/50')
                     onDrop(e, column.id, swimlane.id)
                   }}
                   onDragEnter={(e) => {
-                    e.currentTarget.classList.add('border-[#7dd87d]', 'bg-[#7dd87d]/10')
+                    e.currentTarget.classList.add('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'scale-[1.02]', 'shadow-lg', 'shadow-[#7dd87d]/50')
                   }}
                   onDragLeave={(e) => {
-                    e.currentTarget.classList.remove('border-[#7dd87d]', 'bg-[#7dd87d]/10')
+                    // Only remove if we're actually leaving the drop zone (not just entering a child)
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    const x = e.clientX
+                    const y = e.clientY
+                    if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+                      e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'scale-[1.02]', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                    }
                   }}
                 >
                   {columnTasks.length === 0 ? (

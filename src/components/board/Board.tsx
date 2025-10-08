@@ -1,11 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
+import { Plus } from 'lucide-react'
 import { Board as BoardType, Task } from '@/lib/types'
 import { Column } from './Column'
 import { Swimlane } from './Swimlane'
 import { TaskDetailsDialog } from './TaskDetailsDialog'
 import { CreateTaskDialog } from './CreateTaskDialog'
+import { Button } from '@/components/ui/button'
 
 interface BoardProps {
   board: BoardType
@@ -132,40 +134,49 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Column Headers - with horizontal scroll */}
-      <div className="flex gap-4 px-4 py-3 bg-[#1a3a3a] border-b border-[#4a6a6a] overflow-x-auto">
-        <div className="w-48 shrink-0"></div>
-        <div className="flex gap-4 flex-1">
+      {/* Column Headers - synchronized scroll */}
+      <div className="flex gap-4 px-4 py-3 bg-[#1a3a3a] border-b border-[#4a6a6a]">
+        <div className="w-48 shrink-0 flex items-center">
+          <Button
+            onClick={() => handleOpenCreateDialog()}
+            className="bg-[#7dd87d] text-[#1a3a3a] hover:bg-[#6cc86c] font-semibold"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Task
+          </Button>
+        </div>
+        <div className="flex gap-4 flex-1 min-w-0">
           {board.columns
             .sort((a, b) => a.order - b.order)
             .map((column) => (
               <Column
                 key={column.id}
                 column={column}
-                onAddTask={(columnId) => handleOpenCreateDialog(columnId)}
               />
             ))}
         </div>
       </div>
 
-      {/* Swimlanes - with horizontal scroll */}
-      <div className="flex-1 overflow-x-auto overflow-y-auto">
-        {board.swimlanes
-          .sort((a, b) => a.order - b.order)
-          .map((swimlane) => (
-            <Swimlane
-              key={swimlane.id}
-              swimlane={swimlane}
-              columns={board.columns.sort((a, b) => a.order - b.order)}
-              tasks={board.tasks}
-              onToggleCollapse={handleToggleCollapse}
-              onTaskClick={setSelectedTask}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              onAddTask={handleOpenCreateDialog}
-            />
-          ))}
+      {/* Swimlanes - synchronized scroll */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="overflow-x-auto">
+          {board.swimlanes
+            .sort((a, b) => a.order - b.order)
+            .map((swimlane) => (
+              <Swimlane
+                key={swimlane.id}
+                swimlane={swimlane}
+                columns={board.columns.sort((a, b) => a.order - b.order)}
+                tasks={board.tasks}
+                onToggleCollapse={handleToggleCollapse}
+                onTaskClick={setSelectedTask}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onAddTask={handleOpenCreateDialog}
+              />
+            ))}
+        </div>
       </div>
 
       {/* Task Details Dialog */}
