@@ -57,7 +57,7 @@ export function Swimlane({
           <div className="w-48 shrink-0"></div>
 
           {/* Column drop zones - Flex layout for horizontal scroll */}
-          <div className="flex gap-4 flex-1">
+          <div className="flex gap-4">
             {columns.map((column) => {
               const columnTasks = tasks.filter(
                 (task) =>
