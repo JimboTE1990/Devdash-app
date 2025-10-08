@@ -22,6 +22,7 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [preselectedColumn, setPreselectedColumn] = useState<string>()
   const [preselectedSwimlane, setPreselectedSwimlane] = useState<string>()
+  const [dragOverTarget, setDragOverTarget] = useState<{ columnId: string; swimlaneId: string } | null>(null)
   const headerScrollRef = React.useRef<HTMLDivElement>(null)
   const contentScrollRef = React.useRef<HTMLDivElement>(null)
 
@@ -39,9 +40,20 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
     }
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, columnId: string, swimlaneId: string) => {
     e.preventDefault()
+    e.stopPropagation()
     e.dataTransfer.dropEffect = 'move'
+    setDragOverTarget({ columnId, swimlaneId })
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    // Only clear if we're leaving the container, not just entering a child
+    const relatedTarget = e.relatedTarget as HTMLElement
+    if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
+      setDragOverTarget(null)
+    }
   }
 
   const handleDrop = (
@@ -50,6 +62,9 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
     swimlaneId: string
   ) => {
     e.preventDefault()
+    e.stopPropagation()
+    setDragOverTarget(null)
+
     if (!draggedTask) return
 
     // Only update if the task is actually moving to a different location
@@ -74,6 +89,7 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
   const handleDragEnd = () => {
     setDraggedTask(null)
     setIsDragging(false)
+    setDragOverTarget(null)
   }
 
   const handleToggleCollapse = (swimlaneId: string) => {
@@ -179,16 +195,26 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
                           {/* Tasks or Empty State */}
                           {swimlaneTasks.length === 0 ? (
                             <div
-                              className="flex flex-col items-center justify-center h-24 text-gray-500 text-sm border-2 border-dashed border-[#4a6a6a] rounded"
-                              onDragOver={handleDragOver}
+                              className={`flex flex-col items-center justify-center h-24 text-gray-500 text-sm border-2 border-dashed rounded transition-all duration-200 ${
+                                dragOverTarget?.columnId === column.id && dragOverTarget?.swimlaneId === swimlane.id
+                                  ? 'border-[#7dd87d] bg-[#7dd87d]/10 scale-[1.02]'
+                                  : 'border-[#4a6a6a]'
+                              }`}
+                              onDragOver={(e) => handleDragOver(e, column.id, swimlane.id)}
+                              onDragLeave={handleDragLeave}
                               onDrop={(e) => handleDrop(e, column.id, swimlane.id)}
                             >
                               <span>Drop tasks here</span>
                             </div>
                           ) : (
                             <div
-                              className="space-y-2"
-                              onDragOver={handleDragOver}
+                              className={`space-y-2 p-2 rounded transition-all duration-200 ${
+                                dragOverTarget?.columnId === column.id && dragOverTarget?.swimlaneId === swimlane.id
+                                  ? 'bg-[#7dd87d]/10 ring-2 ring-[#7dd87d]'
+                                  : ''
+                              }`}
+                              onDragOver={(e) => handleDragOver(e, column.id, swimlane.id)}
+                              onDragLeave={handleDragLeave}
                               onDrop={(e) => handleDrop(e, column.id, swimlane.id)}
                             >
                               {swimlaneTasks.map((task) => (
