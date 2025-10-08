@@ -136,65 +136,77 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Column Headers */}
-      <div
-        ref={headerScrollRef}
-        className="overflow-x-auto overflow-y-hidden bg-[#1a3a3a] border-b border-[#4a6a6a]"
-        onScroll={(e) => {
-          if (contentScrollRef.current) {
-            contentScrollRef.current.scrollLeft = e.currentTarget.scrollLeft
-          }
-        }}
-      >
-        <div className="flex gap-4 px-4 py-3 min-w-max">
-          <div className="w-48 shrink-0 flex items-center">
-            <Button
-              onClick={() => handleOpenCreateDialog()}
-              className="bg-[#7dd87d] text-[#1a3a3a] hover:bg-[#6cc86c] font-semibold"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              New Task
-            </Button>
-          </div>
-          <div className="flex gap-4 shrink-0">
-            {board.columns
-              .sort((a, b) => a.order - b.order)
-              .map((column) => (
-                <Column
-                  key={column.id}
-                  column={column}
-                />
-              ))}
-          </div>
-        </div>
+      {/* Header with New Task button */}
+      <div className="flex items-center gap-4 px-4 py-3 bg-[#1a3a3a] border-b border-[#4a6a6a]">
+        <Button
+          onClick={() => handleOpenCreateDialog()}
+          className="bg-[#7dd87d] text-[#1a3a3a] hover:bg-[#6cc86c] font-semibold"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          New Task
+        </Button>
       </div>
 
-      {/* Swimlanes */}
-      <div
-        ref={contentScrollRef}
-        className="flex-1 overflow-auto"
-        onScroll={(e) => {
-          if (headerScrollRef.current) {
-            headerScrollRef.current.scrollLeft = e.currentTarget.scrollLeft
-          }
-        }}
-      >
-        {board.swimlanes
-          .sort((a, b) => a.order - b.order)
-          .map((swimlane) => (
-            <Swimlane
-              key={swimlane.id}
-              swimlane={swimlane}
-              columns={board.columns.sort((a, b) => a.order - b.order)}
-              tasks={board.tasks}
-              onToggleCollapse={handleToggleCollapse}
-              onTaskClick={setSelectedTask}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              onAddTask={handleOpenCreateDialog}
-            />
-          ))}
+      {/* Columns Layout */}
+      <div className="flex-1 overflow-auto">
+        <div className="flex gap-4 p-4 h-full">
+          {board.columns
+            .sort((a, b) => a.order - b.order)
+            .map((column) => (
+              <div key={column.id} className="flex-1 min-w-[360px] flex flex-col">
+                {/* Column Header */}
+                <div className="bg-[#2d4a4a] px-4 py-3 rounded-t-lg border-b-2 border-[#7dd87d] mb-4">
+                  <h3 className="font-semibold text-white text-lg">{column.title}</h3>
+                </div>
+
+                {/* Swimlane Sections within Column */}
+                <div className="flex-1 space-y-4 overflow-y-auto">
+                  {board.swimlanes
+                    .sort((a, b) => a.order - b.order)
+                    .map((swimlane) => {
+                      const swimlaneTasks = board.tasks.filter(
+                        (task) => task.columnId === column.id && task.swimlaneId === swimlane.id
+                      )
+
+                      return (
+                        <div key={swimlane.id} className="bg-[#1a3a3a] rounded-lg border border-[#3a5a5a] p-3">
+                          {/* Swimlane Label */}
+                          <div className="text-sm font-medium text-gray-400 mb-2 pb-2 border-b border-[#3a5a5a]">
+                            {swimlane.title}
+                          </div>
+
+                          {/* Tasks or Empty State */}
+                          {swimlaneTasks.length === 0 ? (
+                            <div
+                              className="flex flex-col items-center justify-center h-24 text-gray-500 text-sm border-2 border-dashed border-[#4a6a6a] rounded"
+                              onDragOver={handleDragOver}
+                              onDrop={(e) => handleDrop(e, column.id, swimlane.id)}
+                            >
+                              <span>Drop tasks here</span>
+                            </div>
+                          ) : (
+                            <div
+                              className="space-y-2"
+                              onDragOver={handleDragOver}
+                              onDrop={(e) => handleDrop(e, column.id, swimlane.id)}
+                            >
+                              {swimlaneTasks.map((task) => (
+                                <TaskCard
+                                  key={task.id}
+                                  task={task}
+                                  onClick={() => setSelectedTask(task)}
+                                  onDragStart={(e) => handleDragStart(e, task)}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                </div>
+              </div>
+            ))}
+        </div>
       </div>
 
       {/* Task Details Dialog */}
