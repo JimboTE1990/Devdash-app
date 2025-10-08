@@ -7,6 +7,7 @@ import { Column } from './Column'
 import { Swimlane } from './Swimlane'
 import { TaskDetailsDialog } from './TaskDetailsDialog'
 import { CreateTaskDialog } from './CreateTaskDialog'
+import { TaskCard } from './TaskCard'
 import { Button } from '@/components/ui/button'
 
 interface BoardProps {
