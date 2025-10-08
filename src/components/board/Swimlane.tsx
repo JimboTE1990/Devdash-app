@@ -1,10 +1,11 @@
 'use client'
 
 import React from 'react'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Plus } from 'lucide-react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Swimlane as SwimlaneType, Column, Task } from '@/lib/types'
 import { TaskCard } from './TaskCard'
+import { Button } from '@/components/ui/button'
 
 interface SwimlaneProps {
   swimlane: SwimlaneType
@@ -15,6 +16,7 @@ interface SwimlaneProps {
   onDragStart: (e: React.DragEvent, task: Task) => void
   onDragOver: (e: React.DragEvent) => void
   onDrop: (e: React.DragEvent, columnId: string, swimlaneId: string) => void
+  onAddTask?: (columnId: string, swimlaneId: string) => void
 }
 
 export function Swimlane({
@@ -26,6 +28,7 @@ export function Swimlane({
   onDragStart,
   onDragOver,
   onDrop,
+  onAddTask,
 }: SwimlaneProps) {
   return (
     <Collapsible
@@ -53,8 +56,8 @@ export function Swimlane({
           {/* Swimlane label space */}
           <div className="w-48 shrink-0"></div>
 
-          {/* Column drop zones */}
-          <div className="flex-1 grid grid-cols-3 gap-4">
+          {/* Column drop zones - Flex layout for horizontal scroll */}
+          <div className="flex gap-4 flex-1">
             {columns.map((column) => {
               const columnTasks = tasks.filter(
                 (task) =>
@@ -64,7 +67,7 @@ export function Swimlane({
               return (
                 <div
                   key={column.id}
-                  className="min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-200 hover:border-[#4a7a7a]"
+                  className="w-80 min-w-[320px] min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-200 hover:border-[#4a7a7a]"
                   onDragOver={onDragOver}
                   onDrop={(e) => {
                     e.currentTarget.classList.remove('border-[#7dd87d]', 'bg-[#7dd87d]/10')
@@ -78,8 +81,19 @@ export function Swimlane({
                   }}
                 >
                   {columnTasks.length === 0 ? (
-                    <div className="flex items-center justify-center h-32 text-gray-500 text-sm border-2 border-dashed border-[#4a6a6a] rounded">
-                      Drop tasks here
+                    <div className="flex flex-col items-center justify-center h-32 text-gray-500 text-sm border-2 border-dashed border-[#4a6a6a] rounded gap-2">
+                      <span>Drop tasks here</span>
+                      {onAddTask && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onAddTask(column.id, swimlane.id)}
+                          className="text-[#7dd87d] border-[#7dd87d] hover:bg-[#7dd87d]/10"
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          Add Task
+                        </Button>
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-2">

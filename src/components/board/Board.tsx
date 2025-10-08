@@ -5,6 +5,7 @@ import { Board as BoardType, Task } from '@/lib/types'
 import { Column } from './Column'
 import { Swimlane } from './Swimlane'
 import { TaskDetailsDialog } from './TaskDetailsDialog'
+import { CreateTaskDialog } from './CreateTaskDialog'
 
 interface BoardProps {
   board: BoardType
@@ -15,6 +16,9 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [draggedTask, setDraggedTask] = useState<Task | null>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [preselectedColumn, setPreselectedColumn] = useState<string>()
+  const [preselectedSwimlane, setPreselectedSwimlane] = useState<string>()
 
   const handleDragStart = (e: React.DragEvent, task: Task) => {
     setDraggedTask(task)
@@ -95,22 +99,57 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
     setSelectedTask(updatedTask)
   }
 
+  const handleOpenCreateDialog = (columnId?: string, swimlaneId?: string) => {
+    setPreselectedColumn(columnId || board.columns[0]?.id)
+    setPreselectedSwimlane(swimlaneId || board.swimlanes[0]?.id)
+    setCreateDialogOpen(true)
+  }
+
+  const handleCreateTask = (newTaskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date()
+    const newTask: Task = {
+      ...newTaskData,
+      id: `task-${now.getTime()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: now,
+      updatedAt: now,
+    }
+
+    // Update task ID in comments if any
+    const updatedTask = {
+      ...newTask,
+      comments: newTask.comments.map((comment) => ({
+        ...comment,
+        taskId: newTask.id,
+      })),
+    }
+
+    onUpdateBoard({
+      ...board,
+      tasks: [...board.tasks, updatedTask],
+      updatedAt: now,
+    })
+  }
+
   return (
     <div className="h-full flex flex-col">
-      {/* Column Headers */}
-      <div className="flex gap-4 px-4 py-3 bg-[#1a3a3a] border-b border-[#4a6a6a]">
+      {/* Column Headers - with horizontal scroll */}
+      <div className="flex gap-4 px-4 py-3 bg-[#1a3a3a] border-b border-[#4a6a6a] overflow-x-auto">
         <div className="w-48 shrink-0"></div>
-        <div className="flex-1 grid grid-cols-3 gap-4">
+        <div className="flex gap-4 flex-1">
           {board.columns
             .sort((a, b) => a.order - b.order)
             .map((column) => (
-              <Column key={column.id} column={column} />
+              <Column
+                key={column.id}
+                column={column}
+                onAddTask={(columnId) => handleOpenCreateDialog(columnId)}
+              />
             ))}
         </div>
       </div>
 
-      {/* Swimlanes */}
-      <div className="flex-1 overflow-auto">
+      {/* Swimlanes - with horizontal scroll */}
+      <div className="flex-1 overflow-x-auto overflow-y-auto">
         {board.swimlanes
           .sort((a, b) => a.order - b.order)
           .map((swimlane) => (
@@ -124,6 +163,7 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDrop={handleDrop}
+              onAddTask={handleOpenCreateDialog}
             />
           ))}
       </div>
@@ -134,6 +174,17 @@ export function Board({ board, onUpdateBoard }: BoardProps) {
         open={!!selectedTask}
         onClose={() => setSelectedTask(null)}
         onUpdateTask={handleUpdateTask}
+      />
+
+      {/* Create Task Dialog */}
+      <CreateTaskDialog
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        onCreateTask={handleCreateTask}
+        columns={board.columns}
+        swimlanes={board.swimlanes}
+        preselectedColumn={preselectedColumn}
+        preselectedSwimlane={preselectedSwimlane}
       />
     </div>
   )
