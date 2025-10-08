@@ -18,12 +18,7 @@ export default function PricingPage() {
 
         <div className="flex justify-center mb-12">
           {/* Premium Plan */}
-          <Card className="border-2 border-[#7dd87d] relative max-w-md w-full">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span className="bg-[#7dd87d] text-white px-4 py-1 rounded-full text-sm font-semibold">
-                Best Value
-              </span>
-            </div>
+          <Card className="border-2 border-[#4a6a6a] max-w-md w-full">
             <CardHeader>
               <CardTitle className="text-2xl">Premium</CardTitle>
               <CardDescription>For serious indie developers</CardDescription>
@@ -32,7 +27,7 @@ export default function PricingPage() {
                 <span className="text-gray-400 ml-2">per month</span>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
@@ -52,19 +47,11 @@ export default function PricingPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
-                  <span className="text-gray-200">Task comments and subtasks</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
-                  <span className="text-gray-200">Priority support</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Cancel anytime</span>
                 </li>
               </ul>
 
-              <div className="pt-4 space-y-3">
+              <div className="space-y-4">
                 <div className="text-sm font-medium text-white text-center">New Customer?</div>
                 <Link href="/auth">
                   <Button className="w-full bg-[#7dd87d] hover:bg-[#6cc86c] text-[#1a3a3a] font-semibold">
@@ -75,7 +62,7 @@ export default function PricingPage() {
                   No credit card required • After trial: £9.99/month
                 </p>
 
-                <div className="relative">
+                <div className="relative py-2">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-[#4a6a6a]"></div>
                   </div>
