@@ -48,13 +48,13 @@ export function TaskCard({ task, onClick, onDragStart }: TaskCardProps) {
       onClick={(e) => {
         if (!isDragging) onClick()
       }}
-      className={`p-3 cursor-move hover:bg-[#4a6a6a] transition-all duration-200 hover:shadow-lg active:cursor-grabbing overflow-hidden ${
+      className={`p-3 cursor-move hover:bg-[#4a6a6a] transition-all duration-200 hover:shadow-lg active:cursor-grabbing w-full ${
         isDragging ? 'opacity-50 scale-95' : ''
       }`}
     >
-      <div className="space-y-2 overflow-hidden">
-        <div className="flex items-start justify-between gap-2 min-w-0">
-          <h4 className="font-medium text-white text-sm line-clamp-2 break-words min-w-0 flex-1">{task.title}</h4>
+      <div className="space-y-2 w-full">
+        <div className="flex items-start justify-between gap-2">
+          <h4 className="font-medium text-white text-sm line-clamp-2 break-words flex-1 overflow-hidden">{task.title}</h4>
           {task.priority && (
             <Badge variant={getPriorityColor(task.priority)} className="text-xs shrink-0">
               {task.priority}
@@ -63,10 +63,10 @@ export function TaskCard({ task, onClick, onDragStart }: TaskCardProps) {
         </div>
 
         {task.description && (
-          <p className="text-xs text-gray-400 line-clamp-2 break-words overflow-hidden">{task.description}</p>
+          <p className="text-xs text-gray-400 line-clamp-2 break-words">{task.description}</p>
         )}
 
-        <div className="flex flex-wrap gap-2 items-center text-xs text-gray-400 overflow-hidden">
+        <div className="flex flex-wrap gap-2 items-center text-xs text-gray-400">
           {task.dueDate && (
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />

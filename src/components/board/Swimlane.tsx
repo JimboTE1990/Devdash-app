@@ -73,7 +73,7 @@ export function Swimlane({
               return (
                 <div
                   key={column.id}
-                  className="w-96 min-w-[384px] max-w-[384px] shrink-0 min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-150 overflow-hidden"
+                  className="w-96 min-w-[384px] max-w-[384px] shrink-0 min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-150"
                   onDragOver={onDragOver}
                   onDrop={(e) => {
                     e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
@@ -108,7 +108,7 @@ export function Swimlane({
                       )}
                     </div>
                   ) : (
-                    <div className="space-y-2 overflow-hidden">
+                    <div className="space-y-2">
                       {columnTasks.map((task) => (
                         <TaskCard
                           key={task.id}
