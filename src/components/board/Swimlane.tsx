@@ -37,18 +37,24 @@ export function Swimlane({
       className="border-b border-[#4a6a6a]"
     >
       {/* Swimlane Header - aligned with columns */}
-      <div className="flex gap-4 px-4 py-3 bg-[#2d4a4a]">
-        <div className="w-48 shrink-0">
-          <CollapsibleTrigger className="flex items-center gap-2 text-white font-medium hover:text-[#7dd87d] transition-colors">
-            {swimlane.collapsed ? (
-              <ChevronRight className="h-5 w-5" />
-            ) : (
-              <ChevronDown className="h-5 w-5" />
-            )}
-            <span>{swimlane.title}</span>
-          </CollapsibleTrigger>
+      <div className="bg-[#2d4a4a]">
+        <div className="flex gap-4 px-4 py-3 min-w-max">
+          <div className="w-48 shrink-0">
+            <CollapsibleTrigger className="flex items-center gap-2 text-white font-medium hover:text-[#7dd87d] transition-colors">
+              {swimlane.collapsed ? (
+                <ChevronRight className="h-5 w-5" />
+              ) : (
+                <ChevronDown className="h-5 w-5" />
+              )}
+              <span>{swimlane.title}</span>
+            </CollapsibleTrigger>
+          </div>
+          <div className="flex gap-4 shrink-0">
+            {columns.map((column) => (
+              <div key={column.id} className="w-96 min-w-[384px] shrink-0"></div>
+            ))}
+          </div>
         </div>
-        <div className="flex-1"></div>
       </div>
 
       <CollapsibleContent>
