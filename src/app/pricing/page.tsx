@@ -16,15 +16,20 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          {/* Free Trial */}
-          <Card className="border-2 border-[#4a6a6a]">
+        <div className="flex justify-center mb-12">
+          {/* Premium Plan */}
+          <Card className="border-2 border-[#7dd87d] relative max-w-md w-full">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+              <span className="bg-[#7dd87d] text-white px-4 py-1 rounded-full text-sm font-semibold">
+                Best Value
+              </span>
+            </div>
             <CardHeader>
-              <CardTitle className="text-2xl">Free Trial</CardTitle>
-              <CardDescription>Perfect for testing DevDash</CardDescription>
+              <CardTitle className="text-2xl">Premium</CardTitle>
+              <CardDescription>For serious indie developers</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold text-white">£0</span>
-                <span className="text-gray-400 ml-2">for 7 days</span>
+                <span className="text-4xl font-bold text-white">£9.99</span>
+                <span className="text-gray-400 ml-2">per month</span>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -43,49 +48,7 @@ export default function PricingPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
-                  <span className="text-gray-200">Unlimited custom boards</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
-                  <span className="text-gray-200">No credit card required</span>
-                </li>
-              </ul>
-              <Link href="/auth">
-                <Button variant="outline" className="w-full mt-4">
-                  Start Free Trial
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* Premium Plan */}
-          <Card className="border-2 border-[#7dd87d] relative">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span className="bg-[#7dd87d] text-white px-4 py-1 rounded-full text-sm font-semibold">
-                Most Popular
-              </span>
-            </div>
-            <CardHeader>
-              <CardTitle className="text-2xl">Premium</CardTitle>
-              <CardDescription>For serious indie developers</CardDescription>
-              <div className="mt-4">
-                <span className="text-4xl font-bold text-white">£9.99</span>
-                <span className="text-gray-400 ml-2">per month</span>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
-                  <span className="text-gray-200">Everything in Free Trial</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Unlimited tasks and boards</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
-                  <span className="text-gray-200">Advanced task management</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-0.5" />
@@ -100,14 +63,33 @@ export default function PricingPage() {
                   <span className="text-gray-200">Cancel anytime</span>
                 </li>
               </ul>
-              <Link href="/auth">
-                <Button className="w-full mt-4">
-                  Start 7-Day Free Trial
-                </Button>
-              </Link>
-              <p className="text-xs text-gray-400 text-center">
-                After trial, you'll be charged £9.99/month
-              </p>
+
+              <div className="pt-4 space-y-3">
+                <div className="text-sm font-medium text-white text-center">New Customer?</div>
+                <Link href="/auth">
+                  <Button className="w-full bg-[#7dd87d] hover:bg-[#6cc86c] text-[#1a3a3a] font-semibold">
+                    Start 7-Day Free Trial
+                  </Button>
+                </Link>
+                <p className="text-xs text-gray-400 text-center">
+                  No credit card required • After trial: £9.99/month
+                </p>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-[#4a6a6a]"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-[#3a5a5a] px-2 text-gray-400">or</span>
+                  </div>
+                </div>
+
+                <Link href="/auth">
+                  <Button variant="outline" className="w-full border-[#7dd87d] text-[#7dd87d] hover:bg-[#7dd87d]/10">
+                    Sign Up for Premium Plan
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>
