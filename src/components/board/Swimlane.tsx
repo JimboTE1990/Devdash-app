@@ -108,7 +108,7 @@ export function Swimlane({
                       )}
                     </div>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-2 overflow-hidden">
                       {columnTasks.map((task) => (
                         <TaskCard
                           key={task.id}
