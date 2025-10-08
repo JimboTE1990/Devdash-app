@@ -48,7 +48,7 @@ export function TaskCard({ task, onClick, onDragStart }: TaskCardProps) {
       onClick={(e) => {
         if (!isDragging) onClick()
       }}
-      className={`p-3 cursor-move hover:bg-[#4a6a6a] transition-all duration-200 hover:shadow-lg active:cursor-grabbing w-full ${
+      className={`p-3 cursor-move hover:bg-[#4a6a6a] transition-all duration-200 hover:shadow-lg active:cursor-grabbing w-full max-w-full box-border ${
         isDragging ? 'opacity-50 scale-95' : ''
       }`}
     >
