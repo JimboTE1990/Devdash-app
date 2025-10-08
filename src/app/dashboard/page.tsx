@@ -162,7 +162,7 @@ export default function DashboardPage() {
               className="flex-1 overflow-hidden m-0"
             >
               {currentBoard && (
-                <div className="h-full bg-[#2d4a4a] rounded-lg border border-[#4a6a6a] overflow-hidden">
+                <div className="h-full bg-[#2d4a4a] rounded-lg border border-[#4a6a6a]">
                   <BoardComponent
                     board={currentBoard}
                     onUpdateBoard={handleUpdateBoard}
