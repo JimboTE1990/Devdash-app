@@ -34,13 +34,13 @@ export function Swimlane({
     <Collapsible
       open={!swimlane.collapsed}
       onOpenChange={() => onToggleCollapse(swimlane.id)}
-      className="border-b border-[#4a6a6a]"
+      className="border-b border-border"
     >
       {/* Swimlane Header - aligned with columns */}
-      <div className="bg-[#2d4a4a]">
+      <div className="bg-muted">
         <div className="flex gap-4 px-4 py-3 min-w-max">
           <div className="w-48 shrink-0">
-            <CollapsibleTrigger className="flex items-center gap-2 text-white font-medium hover:text-[#7dd87d] transition-colors">
+            <CollapsibleTrigger className="flex items-center gap-2 text-foreground font-medium hover:text-primary transition-colors">
               {swimlane.collapsed ? (
                 <ChevronRight className="h-5 w-5" />
               ) : (
@@ -73,14 +73,14 @@ export function Swimlane({
               return (
                 <div
                   key={column.id}
-                  className="w-[360px] min-w-[360px] shrink-0 min-h-[200px] bg-[#1a3a3a] rounded-lg border-2 border-[#3a5a5a] p-3 transition-all duration-150"
+                  className="w-[360px] min-w-[360px] shrink-0 min-h-[200px] bg-card rounded-lg border-2 border-muted p-3 transition-all duration-150"
                   onDragOver={onDragOver}
                   onDrop={(e) => {
-                    e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                    e.currentTarget.classList.remove('!border-primary', '!bg-primary/20', 'shadow-lg', 'shadow-primary/50')
                     onDrop(e, column.id, swimlane.id)
                   }}
                   onDragEnter={(e) => {
-                    e.currentTarget.classList.add('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                    e.currentTarget.classList.add('!border-primary', '!bg-primary/20', 'shadow-lg', 'shadow-primary/50')
                   }}
                   onDragLeave={(e) => {
                     // Only remove if we're actually leaving the drop zone (not just entering a child)
@@ -88,19 +88,19 @@ export function Swimlane({
                     const x = e.clientX
                     const y = e.clientY
                     if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-                      e.currentTarget.classList.remove('!border-[#7dd87d]', '!bg-[#7dd87d]/20', 'shadow-lg', 'shadow-[#7dd87d]/50')
+                      e.currentTarget.classList.remove('!border-primary', '!bg-primary/20', 'shadow-lg', 'shadow-primary/50')
                     }
                   }}
                 >
                     {columnTasks.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center h-32 text-gray-500 text-sm border-2 border-dashed border-[#4a6a6a] rounded gap-2">
+                      <div className="flex flex-col items-center justify-center h-32 text-muted-foreground text-sm border-2 border-dashed border-border rounded gap-2">
                         <span>Drop tasks here</span>
                         {onAddTask && (
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => onAddTask(column.id, swimlane.id)}
-                            className="text-[#7dd87d] border-[#7dd87d] hover:bg-[#7dd87d]/10"
+                            className="text-primary border-primary hover:bg-primary/10"
                           >
                             <Plus className="h-4 w-4 mr-1" />
                             Add Task

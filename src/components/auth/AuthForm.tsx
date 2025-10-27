@@ -32,6 +32,7 @@ export default function AuthForm() {
     try {
       if (isLogin) {
         await login(email, password)
+        router.push('/dashboard')
       } else {
         if (!firstName || !lastName) {
           setError('Please provide your first and last name')
@@ -39,8 +40,9 @@ export default function AuthForm() {
           return
         }
         await register(email, password, firstName, lastName)
+        // Redirect to email-sent page after registration
+        router.push('/auth/email-sent')
       }
-      router.push('/dashboard')
     } catch (err: any) {
       setError(err.message || 'An error occurred')
     } finally {
@@ -51,13 +53,13 @@ export default function AuthForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Welcome to DevDash</CardTitle>
+        <CardTitle>Welcome to Jimbula</CardTitle>
         <CardDescription>
           {isLogin ? 'Sign in to your account' : 'Create your account and start your 7-day free trial'}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs value={isLogin ? 'login' : 'register'} onValueChange={(v) => setIsLogin(v === 'login')}>
+        <Tabs value={isLogin ? 'login' : 'register'} onValueChange={(v) => setIsLogin(v === 'login')} defaultValue="login">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="register">Register</TabsTrigger>

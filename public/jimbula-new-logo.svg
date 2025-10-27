@@ -1,0 +1,41 @@
+<svg width="200" height="120" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient for first rectangle (blue/teal) -->
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A6B7C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5BA6A6;stop-opacity:1" />
+    </linearGradient>
+    <!-- Gradient for second rectangle (green) -->
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6B9668;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8FB88A;stop-opacity:1" />
+    </linearGradient>
+    <!-- Gradient for third rectangle (gold/yellow) -->
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#B89E5F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D4B86A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- First rounded rectangle (left - blue/teal) -->
+  <rect x="10" y="10" width="50" height="100" rx="15" fill="url(#grad1)"/>
+  <rect x="15" y="25" width="20" height="12" rx="3" fill="white" opacity="0.9"/>
+  <rect x="15" y="75" width="25" height="20" rx="5" fill="white" opacity="0.4"/>
+
+  <!-- Second rounded rectangle (center - green) -->
+  <rect x="75" y="10" width="50" height="100" rx="15" fill="url(#grad2)"/>
+  <rect x="80" y="25" width="20" height="12" rx="3" fill="white" opacity="0.9"/>
+  <rect x="80" y="75" width="25" height="20" rx="5" fill="white" opacity="0.4"/>
+
+  <!-- Third rounded rectangle (right - gold/yellow) -->
+  <rect x="140" y="10" width="50" height="100" rx="15" fill="url(#grad3)"/>
+  <rect x="145" y="25" width="20" height="12" rx="3" fill="white" opacity="0.9"/>
+  <rect x="145" y="75" width="25" height="20" rx="5" fill="white" opacity="0.4"/>
+
+  <!-- Connection lines -->
+  <path d="M 35 60 Q 55 80 75 60" stroke="white" stroke-width="2.5" fill="none" opacity="0.7"/>
+  <line x1="125" y1="35" x2="140" y2="25" stroke="white" stroke-width="2" opacity="0.7"/>
+
+  <!-- Arrow -->
+  <path d="M 185 20 L 195 15 L 190 25 Z" fill="#D4B86A"/>
+</svg>

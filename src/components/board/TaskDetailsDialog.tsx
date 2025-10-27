@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Task, Comment, Subtask } from '@/lib/types'
+import { Task, Comment, Subtask, Column, Swimlane } from '@/lib/types'
 import {
   Dialog,
-  DialogContent,
+  ResizableDialogContent,
   DialogHeader,
   DialogTitle,
   DialogClose,
@@ -20,9 +20,10 @@ import {
   MessageSquare,
   CheckSquare,
   Square,
-  AlertCircle,
-  XCircle,
   Trash2,
+  Copy,
+  Archive,
+  ArchiveRestore,
 } from 'lucide-react'
 import { formatDate, formatRelativeTime, generateId } from '@/lib/utils'
 
@@ -31,6 +32,10 @@ interface TaskDetailsDialogProps {
   open: boolean
   onClose: () => void
   onUpdateTask: (task: Task) => void
+  onCloneTask?: (task: Task) => void
+  onDeleteTask?: (taskId: string) => void
+  columns?: Column[]
+  swimlanes?: Swimlane[]
 }
 
 export function TaskDetailsDialog({
@@ -38,13 +43,17 @@ export function TaskDetailsDialog({
   open,
   onClose,
   onUpdateTask,
+  onCloneTask,
+  onDeleteTask,
+  columns,
+  swimlanes,
 }: TaskDetailsDialogProps) {
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [title, setTitle] = useState(task?.title || '')
   const [description, setDescription] = useState(task?.description || '')
   const [newComment, setNewComment] = useState('')
   const [newSubtask, setNewSubtask] = useState('')
   const [showCalendar, setShowCalendar] = useState(false)
+  const [subtaskDatePickerId, setSubtaskDatePickerId] = useState<string | null>(null)
 
   React.useEffect(() => {
     if (task) {
@@ -58,7 +67,6 @@ export function TaskDetailsDialog({
   const handleSaveTitle = () => {
     if (title.trim()) {
       onUpdateTask({ ...task, title: title.trim(), updatedAt: new Date() })
-      setIsEditingTitle(false)
     }
   }
 
@@ -113,85 +121,83 @@ export function TaskDetailsDialog({
     onUpdateTask({ ...task, subtasks: updatedSubtasks, updatedAt: new Date() })
   }
 
+  const handleSetSubtaskDueDate = (subtaskId: string, date: Date | undefined) => {
+    const updatedSubtasks = task.subtasks.map((st) =>
+      st.id === subtaskId ? { ...st, dueDate: date } : st
+    )
+    onUpdateTask({ ...task, subtasks: updatedSubtasks, updatedAt: new Date() })
+    setSubtaskDatePickerId(null)
+  }
+
   const handleSetDueDate = (date: Date) => {
     onUpdateTask({ ...task, dueDate: date, updatedAt: new Date() })
     setShowCalendar(false)
   }
 
-  const handleToggleBlocked = () => {
-    if (task.isBlocked) {
-      onUpdateTask({
-        ...task,
-        isBlocked: false,
-        blockReason: undefined,
-        updatedAt: new Date(),
-      })
-    } else {
-      const reason = prompt('Enter block reason:')
-      if (reason) {
-        onUpdateTask({
-          ...task,
-          isBlocked: true,
-          blockReason: reason,
-          updatedAt: new Date(),
-        })
-      }
+  const handleClone = () => {
+    if (onCloneTask && task) {
+      onCloneTask(task)
+      onClose()
     }
   }
 
-  const handleToggleRejected = () => {
-    if (task.isRejected) {
-      onUpdateTask({
-        ...task,
-        isRejected: false,
-        rejectionReason: undefined,
-        updatedAt: new Date(),
-      })
-    } else {
-      const reason = prompt('Enter rejection reason:')
-      if (reason) {
-        onUpdateTask({
-          ...task,
-          isRejected: true,
-          rejectionReason: reason,
-          updatedAt: new Date(),
-        })
+  const handleDelete = () => {
+    if (onDeleteTask && task) {
+      if (confirm(`Are you sure you want to delete "${task.title}"?`)) {
+        onDeleteTask(task.id)
+        onClose()
       }
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <ResizableDialogContent>
         <DialogClose onClick={onClose} />
         <DialogHeader>
-          {isEditingTitle ? (
+          <div className="flex items-center justify-between gap-2">
+            <DialogTitle>Task Details</DialogTitle>
             <div className="flex items-center gap-2">
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                onBlur={handleSaveTitle}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSaveTitle()
-                  if (e.key === 'Escape') {
-                    setTitle(task.title)
-                    setIsEditingTitle(false)
-                  }
-                }}
-                autoFocus
-              />
+              {onCloneTask && (
+                <Button
+                  onClick={handleClone}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Clone
+                </Button>
+              )}
+              {onDeleteTask && (
+                <Button
+                  onClick={handleDelete}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </Button>
+              )}
             </div>
-          ) : (
-            <DialogTitle
-              onClick={() => setIsEditingTitle(true)}
-              className="cursor-pointer hover:text-[#7dd87d]"
-            >
-              {task.title}
-            </DialogTitle>
-          )}
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Title */}
+          <div className="space-y-2">
+            <Label htmlFor="task-title">Title</Label>
+            <Input
+              id="task-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={handleSaveTitle}
+              placeholder="Enter task title..."
+              className="text-lg font-medium"
+            />
+          </div>
+
           {/* Description */}
           <div className="space-y-2">
             <Label>Description</Label>
@@ -233,75 +239,163 @@ export function TaskDetailsDialog({
             )}
           </div>
 
-          {/* Status Actions */}
-          <div className="flex gap-2">
-            <Button
-              variant={task.isBlocked ? 'destructive' : 'outline'}
-              size="sm"
-              onClick={handleToggleBlocked}
+          {/* Priority */}
+          <div className="space-y-2">
+            <Label>Priority</Label>
+            <select
+              value={task.priority || 'medium'}
+              onChange={(e) => onUpdateTask({ ...task, priority: e.target.value as 'low' | 'medium' | 'high', updatedAt: new Date() })}
+              className="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              <AlertCircle className="h-4 w-4 mr-2" />
-              {task.isBlocked ? 'Unblock' : 'Block'}
-            </Button>
-            <Button
-              variant={task.isRejected ? 'destructive' : 'outline'}
-              size="sm"
-              onClick={handleToggleRejected}
-            >
-              <XCircle className="h-4 w-4 mr-2" />
-              {task.isRejected ? 'Unreject' : 'Reject'}
-            </Button>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
 
-          {task.isBlocked && task.blockReason && (
-            <div className="p-3 bg-red-900/20 border border-red-500/50 rounded-md">
-              <p className="text-sm text-red-300">
-                <strong>Blocked:</strong> {task.blockReason}
-              </p>
+          {/* Move to Column */}
+          {columns && columns.length > 0 && (
+            <div className="space-y-2">
+              <Label>Move to Column</Label>
+              <select
+                value={task.columnId}
+                onChange={(e) => onUpdateTask({ ...task, columnId: e.target.value, updatedAt: new Date() })}
+                className="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {columns.map((column) => (
+                  <option key={column.id} value={column.id}>
+                    {column.title}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 
-          {task.isRejected && task.rejectionReason && (
-            <div className="p-3 bg-red-900/20 border border-red-500/50 rounded-md">
-              <p className="text-sm text-red-300">
-                <strong>Rejected:</strong> {task.rejectionReason}
-              </p>
+          {/* Archive/Unarchive */}
+          {task.columnId === columns?.find(c => c.title.toLowerCase() === 'done')?.id && (
+            <div className="space-y-2">
+              <Label>Archive</Label>
+              <div className="flex gap-2">
+                {task.isArchived ? (
+                  <Button
+                    onClick={() => onUpdateTask({ ...task, isArchived: false, archivedAt: undefined, updatedAt: new Date() })}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <ArchiveRestore className="h-4 w-4" />
+                    Unarchive Task
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => onUpdateTask({ ...task, isArchived: true, archivedAt: new Date(), updatedAt: new Date() })}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Archive className="h-4 w-4" />
+                    Archive Task
+                  </Button>
+                )}
+                {task.isArchived && (
+                  <Badge variant="secondary" className="text-xs">
+                    Archived {task.archivedAt && `on ${formatDate(task.archivedAt)}`}
+                  </Badge>
+                )}
+              </div>
             </div>
           )}
 
           {/* Subtasks */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              <CheckSquare className="h-4 w-4" />
-              Subtasks ({task.subtasks.filter((st) => st.completed).length}/
-              {task.subtasks.length})
-            </Label>
-            <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="flex items-center gap-2">
+                <CheckSquare className="h-4 w-4" />
+                Subtasks ({task.subtasks.filter((st) => st.completed).length}/
+                {task.subtasks.length})
+              </Label>
+              {task.subtasks.length > 0 && (
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      const updatedSubtasks = task.subtasks.map((st) => ({ ...st, completed: true }))
+                      onUpdateTask({ ...task, subtasks: updatedSubtasks, updatedAt: new Date() })
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs text-green-400 hover:text-green-300"
+                  >
+                    Check All
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      const updatedSubtasks = task.subtasks.map((st) => ({ ...st, completed: false }))
+                      onUpdateTask({ ...task, subtasks: updatedSubtasks, updatedAt: new Date() })
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs text-gray-400 hover:text-gray-300"
+                  >
+                    Uncheck All
+                  </Button>
+                </div>
+              )}
+            </div>
+            <div className="space-y-3">
               {task.subtasks.map((subtask) => (
-                <div key={subtask.id} className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleToggleSubtask(subtask.id)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    {subtask.completed ? (
-                      <CheckSquare className="h-4 w-4" />
-                    ) : (
-                      <Square className="h-4 w-4" />
-                    )}
-                  </button>
-                  <span
-                    className={`flex-1 text-sm ${
-                      subtask.completed ? 'line-through text-gray-500' : 'text-gray-200'
-                    }`}
-                  >
-                    {subtask.title}
-                  </span>
-                  <button
-                    onClick={() => handleDeleteSubtask(subtask.id)}
-                    className="text-gray-400 hover:text-red-400"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                <div key={subtask.id} className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleToggleSubtask(subtask.id)}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      {subtask.completed ? (
+                        <CheckSquare className="h-4 w-4" />
+                      ) : (
+                        <Square className="h-4 w-4" />
+                      )}
+                    </button>
+                    <span
+                      className={`flex-1 text-sm ${
+                        subtask.completed ? 'line-through text-muted-foreground' : 'text-foreground/80'
+                      }`}
+                    >
+                      {subtask.title}
+                    </span>
+                    <Button
+                      onClick={() => setSubtaskDatePickerId(subtaskDatePickerId === subtask.id ? null : subtask.id)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                    >
+                      <CalendarIcon className="h-3 w-3 mr-1" />
+                      {subtask.dueDate ? formatDate(subtask.dueDate) : 'Date'}
+                    </Button>
+                    <button
+                      onClick={() => handleDeleteSubtask(subtask.id)}
+                      className="text-gray-400 hover:text-red-400"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  {subtaskDatePickerId === subtask.id && (
+                    <div className="ml-6 p-3 bg-muted rounded-lg border border-border">
+                      <Calendar
+                        selected={subtask.dueDate}
+                        onSelect={(date) => handleSetSubtaskDueDate(subtask.id, date)}
+                      />
+                      {subtask.dueDate && (
+                        <Button
+                          onClick={() => handleSetSubtaskDueDate(subtask.id, undefined)}
+                          variant="ghost"
+                          size="sm"
+                          className="w-full mt-2"
+                        >
+                          Clear Date
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
               <div className="flex items-center gap-2">
@@ -331,17 +425,17 @@ export function TaskDetailsDialog({
               {task.comments.map((comment) => (
                 <div
                   key={comment.id}
-                  className="p-3 bg-[#3a5a5a] rounded-md space-y-1"
+                  className="p-3 bg-muted rounded-md space-y-1"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-white">
+                    <span className="text-sm font-medium text-foreground">
                       {comment.userName}
                     </span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       {formatRelativeTime(comment.createdAt)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-200">{comment.content}</p>
+                  <p className="text-sm text-foreground/80">{comment.content}</p>
                 </div>
               ))}
             </div>
@@ -364,8 +458,18 @@ export function TaskDetailsDialog({
               </Button>
             </div>
           </div>
+
+          {/* Update Button */}
+          <div className="flex justify-end pt-4 border-t border-border">
+            <Button
+              onClick={onClose}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8"
+            >
+              Done
+            </Button>
+          </div>
         </div>
-      </DialogContent>
+      </ResizableDialogContent>
     </Dialog>
   )
 }

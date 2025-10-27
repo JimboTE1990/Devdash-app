@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User } from '@/lib/types'
+import { supabase } from '@/lib/supabase/client'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 interface AuthContextType {
   user: User | null
@@ -12,8 +14,12 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<void>
   updatePassword: (newPassword: string) => Promise<void>
   updateProfile: (firstName: string, lastName: string) => Promise<void>
+  upgradeToPremium: () => Promise<void>
+  resendVerificationEmail: () => Promise<void>
   isTrialActive: boolean
   isPremium: boolean
+  hasUsedTrial: boolean
+  requiresUpgrade: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -26,28 +32,68 @@ export function useAuth() {
   return context
 }
 
+// Helper function to fetch user profile from Supabase
+async function fetchUserProfile(supabaseUser: SupabaseUser): Promise<User | null> {
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', supabaseUser.id)
+    .single()
+
+  if (error) {
+    console.error('Error fetching profile:', error)
+    return null
+  }
+
+  if (!profile) return null
+
+  return {
+    uid: profile.id,
+    email: supabaseUser.email!,
+    firstName: profile.first_name,
+    lastName: profile.last_name,
+    plan: profile.plan,
+    trialStartDate: profile.trial_start_date ? new Date(profile.trial_start_date) : undefined,
+    trialEndDate: profile.trial_end_date ? new Date(profile.trial_end_date) : undefined,
+    subscriptionStartDate: profile.subscription_start_date ? new Date(profile.subscription_start_date) : undefined,
+    isLifetimeFree: profile.is_lifetime_free || false,
+    trialDurationDays: profile.trial_duration_days || 7,
+    createdAt: new Date(profile.created_at),
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check localStorage for existing session
-    const storedUser = localStorage.getItem('devdash_user')
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser)
-        // Convert date strings back to Date objects
-        if (userData.trialStartDate) userData.trialStartDate = new Date(userData.trialStartDate)
-        if (userData.trialEndDate) userData.trialEndDate = new Date(userData.trialEndDate)
-        if (userData.subscriptionStartDate) userData.subscriptionStartDate = new Date(userData.subscriptionStartDate)
-        if (userData.createdAt) userData.createdAt = new Date(userData.createdAt)
-        setUser(userData)
-      } catch (error) {
-        console.error('Failed to parse stored user:', error)
-        localStorage.removeItem('devdash_user')
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        fetchUserProfile(session.user).then((profile) => {
+          setUser(profile)
+          setLoading(false)
+        })
+      } else {
+        setUser(null)
+        setLoading(false)
       }
-    }
-    setLoading(false)
+    })
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        fetchUserProfile(session.user).then((profile) => {
+          setUser(profile)
+        })
+      } else {
+        setUser(null)
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   const register = async (
@@ -56,107 +102,122 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     firstName: string,
     lastName: string
   ) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    // Check if user already exists
-    const users = JSON.parse(localStorage.getItem('devdash_users') || '[]')
-    if (users.find((u: any) => u.email === email)) {
-      throw new Error('User already exists')
-    }
-
-    const now = new Date()
-    const trialEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
-
-    const userData: User = {
-      uid: Math.random().toString(36).substring(7),
+    // Sign up with Supabase Auth with email verification
+    const { data, error } = await supabase.auth.signUp({
       email,
-      firstName,
-      lastName,
-      plan: 'free',
-      trialStartDate: now,
-      trialEndDate,
-      createdAt: now,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
+      },
+    })
+
+    if (error) throw error
+
+    if (!data.user) {
+      throw new Error('Failed to create user')
     }
 
-    // Store user with password in users list
-    users.push({ ...userData, password })
-    localStorage.setItem('devdash_users', JSON.stringify(users))
-
-    // Store current user session
-    setUser(userData)
-    localStorage.setItem('devdash_user', JSON.stringify(userData))
+    // Note: Profile will be created after email verification
+    // via the /api/auth/complete-registration endpoint
   }
 
   const login = async (email: string, password: string) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-    const users = JSON.parse(localStorage.getItem('devdash_users') || '[]')
-    const existingUser = users.find((u: any) => u.email === email && u.password === password)
+    if (error) throw error
 
-    if (!existingUser) {
-      throw new Error('Invalid email or password')
+    if (data.user) {
+      const profile = await fetchUserProfile(data.user)
+      setUser(profile)
     }
-
-    const userData: User = {
-      uid: existingUser.uid,
-      email: existingUser.email,
-      firstName: existingUser.firstName,
-      lastName: existingUser.lastName,
-      plan: existingUser.plan || 'free',
-      trialStartDate: existingUser.trialStartDate ? new Date(existingUser.trialStartDate) : undefined,
-      trialEndDate: existingUser.trialEndDate ? new Date(existingUser.trialEndDate) : undefined,
-      subscriptionStartDate: existingUser.subscriptionStartDate ? new Date(existingUser.subscriptionStartDate) : undefined,
-      createdAt: existingUser.createdAt ? new Date(existingUser.createdAt) : new Date(),
-    }
-
-    setUser(userData)
-    localStorage.setItem('devdash_user', JSON.stringify(userData))
   }
 
   const logout = async () => {
-    await new Promise(resolve => setTimeout(resolve, 300))
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
     setUser(null)
-    localStorage.removeItem('devdash_user')
   }
 
   const resetPassword = async (email: string) => {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    // In local mode, just simulate success
-    alert(`Password reset email sent to: ${email}\n(This is a demo - no email was actually sent)`)
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    })
+
+    if (error) throw error
+
+    alert(`Password reset email sent to: ${email}\nPlease check your inbox.`)
   }
 
   const updatePassword = async (newPassword: string) => {
-    if (!user) return
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    })
 
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    // Update password in users list
-    const users = JSON.parse(localStorage.getItem('devdash_users') || '[]')
-    const userIndex = users.findIndex((u: any) => u.uid === user.uid)
-    if (userIndex !== -1) {
-      users[userIndex].password = newPassword
-      localStorage.setItem('devdash_users', JSON.stringify(users))
-    }
+    if (error) throw error
   }
 
   const updateProfile = async (firstName: string, lastName: string) => {
     if (!user) return
 
-    const updatedUser = { ...user, firstName, lastName }
-    setUser(updatedUser)
-    localStorage.setItem('devdash_user', JSON.stringify(updatedUser))
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        first_name: firstName,
+        last_name: lastName,
+      })
+      .eq('id', user.uid)
 
-    // Update in users list
-    const users = JSON.parse(localStorage.getItem('devdash_users') || '[]')
-    const userIndex = users.findIndex((u: any) => u.uid === user.uid)
-    if (userIndex !== -1) {
-      users[userIndex].firstName = firstName
-      users[userIndex].lastName = lastName
-      localStorage.setItem('devdash_users', JSON.stringify(users))
-    }
+    if (error) throw error
+
+    // Update local user state
+    setUser({ ...user, firstName, lastName })
   }
+
+  const upgradeToPremium = async () => {
+    if (!user) return
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        plan: 'premium',
+        subscription_start_date: new Date().toISOString(),
+      })
+      .eq('id', user.uid)
+
+    if (error) throw error
+
+    // Update local user state
+    setUser({
+      ...user,
+      plan: 'premium',
+      subscriptionStartDate: new Date(),
+    })
+  }
+
+  const resendVerificationEmail = async () => {
+    const { data, error } = await supabase.auth.resend({
+      type: 'signup',
+      email: user?.email || '',
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
+    })
+
+    if (error) throw error
+
+    alert('Verification email sent! Please check your inbox.')
+  }
+
+  const isLifetimeFree = React.useMemo(() => {
+    return user?.isLifetimeFree === true
+  }, [user])
 
   const isTrialActive = React.useMemo(() => {
     if (!user || !user.trialEndDate) return false
@@ -164,8 +225,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user])
 
   const isPremium = React.useMemo(() => {
-    return user?.plan === 'premium' || isTrialActive
-  }, [user, isTrialActive])
+    return user?.plan === 'premium' || isTrialActive || isLifetimeFree
+  }, [user, isTrialActive, isLifetimeFree])
+
+  const hasUsedTrial = React.useMemo(() => {
+    if (!user) return false
+    return !!user.trialStartDate
+  }, [user])
+
+  const requiresUpgrade = React.useMemo(() => {
+    if (!user) return false
+    if (user.plan === 'premium' || isLifetimeFree) return false
+    if (!user.trialEndDate) return false
+    return new Date() >= user.trialEndDate
+  }, [user, isLifetimeFree])
 
   const value = {
     user,
@@ -176,8 +249,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resetPassword,
     updatePassword,
     updateProfile,
+    upgradeToPremium,
+    resendVerificationEmail,
     isTrialActive,
     isPremium,
+    hasUsedTrial,
+    requiresUpgrade,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

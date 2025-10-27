@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear DevDash Data</title>
+</head>
+<body>
+    <h1>Clearing DevDash Data...</h1>
+    <script>
+        // Clear all planner and dashboard data
+        const keys = Object.keys(localStorage);
+        let cleared = 0;
+        
+        keys.forEach(key => {
+            if (key.includes('planner-tasks') || 
+                key.includes('planner-swimlanes') || 
+                key.includes('planner-history') ||
+                key.includes('dashboard')) {
+                localStorage.removeItem(key);
+                cleared++;
+            }
+        });
+        
+        document.body.innerHTML = '<h1>✓ Cleared ' + cleared + ' items</h1><p>You can close this page and refresh your planner/dashboard.</p>';
+    </script>
+</body>
+</html>

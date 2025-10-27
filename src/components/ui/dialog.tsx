@@ -12,12 +12,14 @@ const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50">
       <div
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange(false)}
       />
-      <div className="relative z-50">{children}</div>
+      <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
+        <div className="pointer-events-auto relative z-50">{children}</div>
+      </div>
     </div>
   )
 }
@@ -29,7 +31,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-lg border border-[#4a6a6a] bg-[#2d4a4a] p-6 shadow-lg',
+      'relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-lg border bg-card text-card-foreground p-6 shadow-lg',
       className
     )}
     {...props}
@@ -74,7 +76,7 @@ const DialogTitle = React.forwardRef<
   <h2
     ref={ref}
     className={cn(
-      'text-lg font-semibold leading-none tracking-tight text-white',
+      'text-lg font-semibold leading-none tracking-tight text-foreground',
       className
     )}
     {...props}
@@ -88,7 +90,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-gray-300', className)}
+    className={cn('text-sm text-muted-foreground', className)}
     {...props}
   />
 ))
@@ -104,9 +106,28 @@ const DialogClose: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   </button>
 )
 
+// Large Dialog Content - Static centered with proper padding
+const ResizableDialogContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-lg border-2 border-border bg-card text-card-foreground shadow-2xl p-6',
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+))
+ResizableDialogContent.displayName = 'ResizableDialogContent'
+
 export {
   Dialog,
   DialogContent,
+  ResizableDialogContent,
   DialogHeader,
   DialogFooter,
   DialogTitle,

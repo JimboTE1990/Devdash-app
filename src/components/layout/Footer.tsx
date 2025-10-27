@@ -1,30 +1,32 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1a3a3a] border-t border-[#4a6a6a] mt-auto">
+    <footer className="bg-card/80 backdrop-blur-md border-t border-border mt-auto">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-[#7dd87d] rounded-md flex items-center justify-center">
-                <span className="text-white font-bold text-xl">D</span>
-              </div>
-              <span className="text-xl font-bold text-white">DevDash</span>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/jimbula-logo-final.svg"
+                alt="Jimbula"
+                width={60}
+                height={36}
+                className="h-9"
+              />
+              <span className="text-2xl font-bold text-foreground tracking-tight">Jimbula</span>
             </div>
-            <p className="text-sm text-gray-400">
-              The ultimate project planner for indie developers and business owners.
-            </p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Product</h3>
+            <h3 className="font-semibold text-foreground mb-4">Product</h3>
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/how-it-works"
-                  className="text-sm text-gray-400 hover:text-[#7dd87d] transition-colors"
+                  href="/#features"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   How it works
                 </Link>
@@ -32,45 +34,47 @@ export default function Footer() {
               <li>
                 <Link
                   href="/pricing"
-                  className="text-sm text-gray-400 hover:text-[#7dd87d] transition-colors"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Pricing
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/dashboard"
-                  className="text-sm text-gray-400 hover:text-[#7dd87d] transition-colors"
+                  href="/planner-v2"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Dashboard
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-white mb-4">Company</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-400 hover:text-[#7dd87d] transition-colors"
-                >
-                  About
+                  Project Planner
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#"
-                  className="text-sm text-gray-400 hover:text-[#7dd87d] transition-colors"
+                  href="/calendar"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Blog
+                  Calendar
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#"
-                  className="text-sm text-gray-400 hover:text-[#7dd87d] transition-colors"
+                  href="/ideas"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Ideas
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/finance"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Finance
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="mailto:contact@jimbula.com"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Contact
                 </Link>
@@ -79,20 +83,20 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Legal</h3>
+            <h3 className="font-semibold text-foreground mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="#"
-                  className="text-sm text-gray-400 hover:text-[#7dd87d] transition-colors"
+                  href="/privacy"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Privacy Policy
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#"
-                  className="text-sm text-gray-400 hover:text-[#7dd87d] transition-colors"
+                  href="/privacy"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Terms of Service
                 </Link>
@@ -101,9 +105,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-[#4a6a6a] text-center">
-          <p className="text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} DevDash. All rights reserved.
+        <div className="mt-8 pt-8 border-t border-border text-center">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Jimbula. All rights reserved.
           </p>
         </div>
       </div>

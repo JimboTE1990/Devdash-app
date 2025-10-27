@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { User, LogOut, Settings } from 'lucide-react'
 
 export default function Header() {
@@ -27,37 +29,39 @@ export default function Header() {
   const isActive = (path: string) => pathname === path
 
   return (
-    <header className="bg-[#1a3a3a] border-b border-[#4a6a6a] sticky top-0 z-50">
+    <header className="bg-card border-b border-border sticky top-0 z-50 shadow-sm">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#7dd87d] rounded-md flex items-center justify-center">
-              <span className="text-white font-bold text-xl">D</span>
-            </div>
-            <span className="text-xl font-bold text-white">DevDash</span>
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src="/jimbula-logo-final.svg"
+              alt="Jimbula"
+              width={70}
+              height={42}
+              className="h-10"
+            />
+            <span className="text-3xl font-bold text-foreground tracking-tight">Jimbula</span>
           </Link>
 
           <div className="flex items-center gap-6">
             <Link
               href="/"
-              className={`text-sm font-medium transition-colors hover:text-[#7dd87d] ${
-                isActive('/') ? 'text-[#7dd87d]' : 'text-gray-300'
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive('/') ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
               Home
             </Link>
             <Link
-              href="/how-it-works"
-              className={`text-sm font-medium transition-colors hover:text-[#7dd87d] ${
-                isActive('/how-it-works') ? 'text-[#7dd87d]' : 'text-gray-300'
-              }`}
+              href="/#features"
+              className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
             >
               How it works
             </Link>
             <Link
               href="/pricing"
-              className={`text-sm font-medium transition-colors hover:text-[#7dd87d] ${
-                isActive('/pricing') ? 'text-[#7dd87d]' : 'text-gray-300'
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive('/pricing') ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
               Pricing
@@ -66,13 +70,39 @@ export default function Header() {
             {user ? (
               <>
                 <Link
-                  href="/dashboard"
-                  className={`text-sm font-medium transition-colors hover:text-[#7dd87d] ${
-                    isActive('/dashboard') ? 'text-[#7dd87d]' : 'text-gray-300'
+                  href="/planner-v2"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/planner-v2') ? 'text-primary' : 'text-muted-foreground'
                   }`}
                 >
-                  Dashboard
+                  Project Planner
                 </Link>
+                <Link
+                  href="/calendar"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/calendar') ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  Calendar
+                </Link>
+                <Link
+                  href="/ideas"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/ideas') ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  Ideas
+                </Link>
+                <Link
+                  href="/finance"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive('/finance') ? 'text-primary' : 'text-muted-foreground'
+                  }`}
+                >
+                  Finance
+                </Link>
+
+                <ThemeToggle />
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -81,9 +111,9 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <div className="px-4 py-2 text-sm text-gray-200">
+                    <div className="px-4 py-2 text-sm">
                       <p className="font-medium">{user.firstName} {user.lastName}</p>
-                      <p className="text-xs text-gray-400">{user.email}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => router.push('/profile')}>
@@ -99,6 +129,7 @@ export default function Header() {
               </>
             ) : (
               <>
+                <ThemeToggle />
                 <Link href="/auth">
                   <Button variant="ghost">Login</Button>
                 </Link>

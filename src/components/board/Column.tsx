@@ -10,8 +10,8 @@ interface ColumnProps {
 export function Column({ column }: ColumnProps) {
   return (
     <div className="w-[360px] min-w-[360px] shrink-0">
-      <div className="bg-[#2d4a4a] px-4 py-3 rounded-t-lg border-b-2 border-[#7dd87d]">
-        <h3 className="font-semibold text-white">{column.title}</h3>
+      <div className="bg-muted px-4 py-3 rounded-t-lg border-b-2 border-primary">
+        <h3 className="font-semibold text-foreground">{column.title}</h3>
       </div>
     </div>
   )

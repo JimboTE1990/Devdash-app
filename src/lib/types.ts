@@ -1,12 +1,14 @@
 export interface User {
   uid: string
   email: string
-  firstName?: string
-  lastName?: string
+  firstName: string
+  lastName: string
   plan: 'free' | 'premium'
   trialStartDate?: Date
   trialEndDate?: Date
   subscriptionStartDate?: Date
+  isLifetimeFree?: boolean
+  trialDurationDays?: number
   createdAt: Date
 }
 
@@ -23,6 +25,7 @@ export interface Subtask {
   id: string
   title: string
   completed: boolean
+  dueDate?: Date
 }
 
 export interface Task {
@@ -40,6 +43,11 @@ export interface Task {
   blockReason?: string
   isRejected: boolean
   rejectionReason?: string
+  isRecurring?: boolean
+  linkedEventId?: string
+  order: number
+  isArchived: boolean
+  archivedAt?: Date
   createdAt: Date
   updatedAt: Date
 }
@@ -70,3 +78,15 @@ export interface Board {
 }
 
 export type BoardType = 'marketing' | 'product' | 'custom'
+
+export interface CalendarEvent {
+  id: string
+  title: string
+  description: string
+  date: Date
+  startTime?: string
+  endTime?: string
+  color: string
+  linkedTaskId?: string
+  createdAt: Date
+}

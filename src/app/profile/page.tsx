@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
+import { User, CreditCard, Lock, Calendar, Mail, Crown, Sparkles } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user, loading, updateProfile, updatePassword, isTrialActive } = useAuth()
@@ -22,6 +24,21 @@ export default function ProfilePage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loadingUpdate, setLoadingUpdate] = useState(false)
+
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.3 }
+  }
+
+  const staggerContainer = {
+    initial: {},
+    animate: {
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  }
 
   useEffect(() => {
     if (!loading && !user) {
@@ -39,7 +56,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-white">Loading...</div>
+        <div className="text-foreground">Loading...</div>
       </div>
     )
   }
@@ -47,6 +64,14 @@ export default function ProfilePage() {
   if (!user) {
     return null
   }
+
+  const getInitials = () => {
+    return `${firstName?.charAt(0) || 'U'}${lastName?.charAt(0) || ''}`.toUpperCase()
+  }
+
+  const daysRemaining = user.trialEndDate
+    ? Math.ceil((user.trialEndDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    : 0
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -95,158 +120,325 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Profile Settings</h1>
-          <p className="text-gray-400">Manage your account settings and preferences</p>
-        </div>
+    <div className="relative overflow-hidden min-h-screen">
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-background dark:from-primary/10 dark:via-accent/5 dark:to-background -z-10" />
 
-        {error && (
-          <div className="p-4 bg-red-900/20 border border-red-500/50 rounded-md">
-            <p className="text-sm text-red-300">{error}</p>
-          </div>
-        )}
+      {/* Floating orbs */}
+      <div className="absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-xl animate-float" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }} />
 
-        {success && (
-          <div className="p-4 bg-green-900/20 border border-green-500/50 rounded-md">
-            <p className="text-sm text-green-300">{success}</p>
-          </div>
-        )}
-
-        {/* Account Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Information</CardTitle>
-            <CardDescription>Your current account details</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label>Email</Label>
-              <p className="text-white mt-1">{user.email}</p>
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Header with Avatar */}
+          <motion.div {...fadeInUp} className="text-center">
+            <div className="relative inline-block mb-6">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent p-0.5">
+                <div className="w-full h-full rounded-full bg-card flex items-center justify-center">
+                  <span className="text-3xl font-bold text-primary">{getInitials()}</span>
+                </div>
+              </div>
+              {user.plan === 'premium' && (
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center border-2 border-background">
+                  <Crown className="h-4 w-4 text-white" />
+                </div>
+              )}
             </div>
-            <div>
-              <Label>Plan</Label>
-              <div className="mt-1 flex items-center gap-2">
-                <Badge variant={user.plan === 'premium' ? 'default' : 'secondary'}>
-                  {user.plan === 'premium' ? 'Premium' : 'Free'}
-                </Badge>
-                {user.plan !== 'premium' && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => router.push('/pricing')}
-                  >
-                    Upgrade to Premium
-                  </Button>
+            <h1 className="text-4xl font-bold mb-2">
+              <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                {firstName} {lastName}
+              </span>
+            </h1>
+            <p className="text-foreground/70 flex items-center justify-center gap-2">
+              <Mail className="h-4 w-4" />
+              {user.email}
+            </p>
+          </motion.div>
+
+          {/* Stats Cards */}
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            animate="animate"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          >
+            <motion.div variants={fadeInUp}>
+              <Card className="glass-strong shadow-lg">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-foreground/60 font-medium">Plan Status</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">
+                        {user.isLifetimeFree
+                          ? 'Lifetime Free'
+                          : user.plan === 'premium'
+                          ? 'Premium'
+                          : 'Free Trial'}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent p-0.5">
+                      <div className="w-full h-full rounded-xl bg-card flex items-center justify-center">
+                        <CreditCard className="h-6 w-6 text-primary" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={fadeInUp}>
+              <Card className="glass-strong shadow-lg">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-foreground/60 font-medium">Member Since</p>
+                      <p className="text-2xl font-bold text-foreground mt-1">
+                        {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent p-0.5">
+                      <div className="w-full h-full rounded-xl bg-card flex items-center justify-center">
+                        <Calendar className="h-6 w-6 text-primary" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {isTrialActive && (
+              <motion.div variants={fadeInUp}>
+                <Card className="glass-strong shadow-lg border-2 border-primary/30">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-foreground/60 font-medium">Trial Days Left</p>
+                        <p className="text-2xl font-bold text-primary mt-1">{daysRemaining}</p>
+                      </div>
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <Sparkles className="h-6 w-6 text-white" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {error && (
+            <motion.div {...fadeInUp} className="p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
+              <p className="text-sm text-red-300">{error}</p>
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div {...fadeInUp} className="p-4 bg-green-900/20 border border-green-500/50 rounded-lg">
+              <p className="text-sm text-green-300">{success}</p>
+            </motion.div>
+          )}
+
+          {/* Account Information */}
+          <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
+            <Card className="glass-strong shadow-xl">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Account Information</CardTitle>
+                    <CardDescription>Your subscription and billing details</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-foreground/70 font-medium">Email Address</Label>
+                    <p className="text-foreground mt-1 font-medium">{user.email}</p>
+                  </div>
+                  <div>
+                    <Label className="text-foreground/70 font-medium">Current Plan</Label>
+                    <div className="mt-1 flex items-center gap-2">
+                      <Badge
+                        variant={user.plan === 'premium' ? 'default' : 'secondary'}
+                        className={user.plan === 'premium' ? 'bg-gradient-to-r from-primary to-accent' : ''}
+                      >
+                        {user.plan === 'premium' ? (
+                          <><Crown className="h-3 w-3 mr-1" /> Premium</>
+                        ) : (
+                          'Free Plan'
+                        )}
+                      </Badge>
+                      {user.plan !== 'premium' && (
+                        <Button
+                          size="sm"
+                          onClick={() => router.push('/checkout')}
+                          className="bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                        >
+                          Upgrade to Premium
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {isTrialActive && user.trialEndDate && (
+                  <div className="p-4 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+                    <div className="flex items-start gap-3">
+                      <Sparkles className="h-5 w-5 text-primary mt-0.5" />
+                      <div>
+                        <Label className="text-foreground font-semibold">Free Trial Active</Label>
+                        <p className="text-foreground/80 mt-1">
+                          Your trial ends on {formatDate(user.trialEndDate)}
+                        </p>
+                        <p className="text-sm text-foreground/70 mt-1">
+                          {daysRemaining} days remaining • Enjoying Jimbula? Upgrade to keep full access!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 )}
-              </div>
-            </div>
-            {isTrialActive && user.trialEndDate && (
-              <div>
-                <Label>Free Trial Status</Label>
-                <p className="text-white mt-1">
-                  Active until {formatDate(user.trialEndDate)}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">
-                  {Math.ceil((user.trialEndDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days remaining
-                </p>
-              </div>
-            )}
-            {user.plan === 'premium' && user.subscriptionStartDate && (
-              <div>
-                <Label>Premium Subscription</Label>
-                <p className="text-white mt-1">
-                  Active since {formatDate(user.subscriptionStartDate)}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">
-                  £9.99/month - Renews monthly
-                </p>
-              </div>
-            )}
-            {!isTrialActive && user.plan === 'free' && (
-              <div>
-                <Label>Plan Status</Label>
-                <p className="text-white mt-1">Free plan</p>
-                <p className="text-sm text-yellow-400 mt-1">
-                  Trial expired. Upgrade to Premium for full access.
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Personal Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-            <CardDescription>Update your personal details</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-              <Button type="submit" disabled={loadingUpdate}>
-                {loadingUpdate ? 'Updating...' : 'Update Profile'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                {user.plan === 'premium' && user.subscriptionStartDate && (
+                  <div className="p-4 rounded-lg bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/20">
+                    <div className="flex items-start gap-3">
+                      <Crown className="h-5 w-5 text-amber-500 mt-0.5" />
+                      <div>
+                        <Label className="text-foreground font-semibold">Premium Subscription</Label>
+                        <p className="text-foreground/80 mt-1">
+                          Active since {formatDate(user.subscriptionStartDate)}
+                        </p>
+                        <p className="text-sm text-foreground/70 mt-1">
+                          £9.99/month • Renews monthly
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-        {/* Change Password */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Change Password</CardTitle>
-            <CardDescription>Update your password</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="submit" disabled={loadingUpdate}>
-                {loadingUpdate ? 'Changing...' : 'Change Password'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                {!isTrialActive && user.plan === 'free' && (
+                  <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                    <div className="flex items-start gap-3">
+                      <Sparkles className="h-5 w-5 text-yellow-500 mt-0.5" />
+                      <div>
+                        <Label className="text-foreground font-semibold">Trial Expired</Label>
+                        <p className="text-foreground/80 mt-1">
+                          Your free trial has ended. Upgrade to Premium for continued access to all features.
+                        </p>
+                        <Button
+                          size="sm"
+                          onClick={() => router.push('/checkout')}
+                          className="mt-3 bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                        >
+                          Upgrade Now
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Personal Information */}
+          <motion.div {...fadeInUp} transition={{ delay: 0.15 }}>
+            <Card className="glass-strong shadow-xl">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Personal Information</CardTitle>
+                    <CardDescription>Update your personal details</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleUpdateProfile} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input
+                        id="firstName"
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input
+                        id="lastName"
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={loadingUpdate}
+                    className="bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                  >
+                    {loadingUpdate ? 'Updating...' : 'Update Profile'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Change Password */}
+          <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
+            <Card className="glass-strong shadow-xl">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                    <Lock className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle>Change Password</CardTitle>
+                    <CardDescription>Update your account password</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={loadingUpdate}
+                    className="bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                  >
+                    {loadingUpdate ? 'Changing...' : 'Change Password'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     </div>
   )

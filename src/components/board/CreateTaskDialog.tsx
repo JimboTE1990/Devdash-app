@@ -72,6 +72,9 @@ export function CreateTaskDialog({
       subtasks: [],
       isBlocked: false,
       isRejected: false,
+      order: 0, // Will be set by parent component
+      isArchived: false,
+      archivedAt: undefined,
     }
 
     onCreateTask(newTask)
@@ -102,7 +105,7 @@ export function CreateTaskDialog({
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           {/* Title - Required */}
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-white">
+            <Label htmlFor="title" className="text-foreground">
               Title <span className="text-red-400">*</span>
             </Label>
             <Input
@@ -115,43 +118,16 @@ export function CreateTaskDialog({
             />
           </div>
 
-          {/* Description - Optional */}
+          {/* Target Date - Optional - MOVED UP FOR VISIBILITY */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-white">
-              Description <span className="text-gray-400 text-sm">(optional)</span>
-            </Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter task description..."
-              rows={3}
-            />
-          </div>
-
-          {/* Initial Comment - Optional */}
-          <div className="space-y-2">
-            <Label htmlFor="comment" className="text-white">
-              Add Comment <span className="text-gray-400 text-sm">(optional)</span>
-            </Label>
-            <Textarea
-              id="comment"
-              value={initialComment}
-              onChange={(e) => setInitialComment(e.target.value)}
-              placeholder="Add an initial comment..."
-              rows={2}
-            />
-          </div>
-
-          {/* Target Date - Optional */}
-          <div className="space-y-2">
-            <Label htmlFor="dueDate" className="text-white">
-              Target Date <span className="text-gray-400 text-sm">(optional)</span>
+            <Label htmlFor="dueDate" className="text-foreground">
+              Target Date <span className="text-muted-foreground text-sm">(optional)</span>
             </Label>
             <div className="flex gap-2">
               <Input
+                id="dueDate"
                 value={dueDate ? dueDate.toLocaleDateString() : ''}
-                placeholder="Select target date..."
+                placeholder="Click to select target date..."
                 readOnly
                 onClick={() => setShowCalendar(!showCalendar)}
                 className="cursor-pointer"
@@ -167,7 +143,7 @@ export function CreateTaskDialog({
               )}
             </div>
             {showCalendar && (
-              <div className="border border-[#4a6a6a] rounded-lg p-3 bg-[#2d4a4a]">
+              <div className="border border-border rounded-lg p-3 bg-muted">
                 <Calendar
                   mode="single"
                   selected={dueDate}
@@ -181,16 +157,44 @@ export function CreateTaskDialog({
             )}
           </div>
 
+          {/* Description - Optional */}
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-foreground">
+              Description <span className="text-muted-foreground text-sm">(optional)</span>
+            </Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter task description..."
+              rows={3}
+            />
+          </div>
+
+          {/* Initial Comment - Optional */}
+          <div className="space-y-2">
+            <Label htmlFor="comment" className="text-foreground">
+              Add Comment <span className="text-muted-foreground text-sm">(optional)</span>
+            </Label>
+            <Textarea
+              id="comment"
+              value={initialComment}
+              onChange={(e) => setInitialComment(e.target.value)}
+              placeholder="Add an initial comment..."
+              rows={2}
+            />
+          </div>
+
           {/* Move ticket to (Column) */}
           <div className="space-y-2">
-            <Label htmlFor="column" className="text-white">
+            <Label htmlFor="column" className="text-foreground">
               Move ticket to
             </Label>
             <select
               id="column"
               value={selectedColumn}
               onChange={(e) => setSelectedColumn(e.target.value)}
-              className="w-full px-3 py-2 bg-[#1a3a3a] border border-[#4a6a6a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#7dd87d]"
+              className="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             >
               {columns.map((column) => (
                 <option key={column.id} value={column.id}>
@@ -202,14 +206,14 @@ export function CreateTaskDialog({
 
           {/* Swimlane Selection */}
           <div className="space-y-2">
-            <Label htmlFor="swimlane" className="text-white">
+            <Label htmlFor="swimlane" className="text-foreground">
               Swimlane
             </Label>
             <select
               id="swimlane"
               value={selectedSwimlane}
               onChange={(e) => setSelectedSwimlane(e.target.value)}
-              className="w-full px-3 py-2 bg-[#1a3a3a] border border-[#4a6a6a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#7dd87d]"
+              className="w-full px-3 py-2 bg-card border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             >
               {swimlanes.map((swimlane) => (
                 <option key={swimlane.id} value={swimlane.id}>
@@ -224,7 +228,7 @@ export function CreateTaskDialog({
             <Button type="button" variant="outline" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-[#7dd87d] text-[#1a3a3a] hover:bg-[#6cc76c]">
+            <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">
               Create Task
             </Button>
           </div>

@@ -1,185 +1,596 @@
+'use client'
+
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle, LayoutDashboard, Zap, Users } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { FeatureCard } from '@/components/landing/FeatureCard'
+import { AnimatedNumber } from '@/components/landing/AnimatedNumber'
+import {
+  Lightbulb,
+  KanbanSquare,
+  Wallet,
+  Calendar as CalendarIcon,
+  CheckCircle,
+  TrendingUp,
+  Users,
+  Eye,
+  Zap,
+  Target,
+  Sparkles,
+  ArrowRight
+} from 'lucide-react'
 
 export default function LandingPage() {
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.3 }
+  }
+
+  const staggerContainer = {
+    initial: {},
+    whileInView: {
+      transition: {
+        staggerChildren: 0.05
+      }
+    },
+    viewport: { once: true }
+  }
+
   return (
-    <div className="container mx-auto px-4 py-16">
-      {/* Hero Section */}
-      <section className="text-center mb-20">
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-          The ultimate project planner for
-          <span className="text-[#7dd87d]"> indie developers</span>
-        </h1>
-        <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-          Streamline your workflow from build, launch, and marketing. DevDash helps you manage your projects with powerful Kanban boards designed specifically for solo developers and business owners.
-        </p>
-        <div className="flex gap-4 justify-center">
-          <Link href="/auth">
-            <Button size="lg" className="text-lg px-8">
-              Start 7-Day Free Trial
-            </Button>
-          </Link>
-          <Link href="/how-it-works">
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              Learn More
-            </Button>
-          </Link>
-        </div>
-        <p className="text-sm text-gray-400 mt-4">
-          No credit card required. Cancel anytime.
-        </p>
-      </section>
+    <div className="relative overflow-hidden">
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-amber-50 to-white dark:from-orange-950/10 dark:via-amber-950/5 dark:to-background -z-10" />
 
-      {/* Features Section */}
-      <section className="mb-20">
-        <h2 className="text-3xl font-bold text-white text-center mb-12">
-          Everything you need to stay organized
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card>
-            <CardHeader>
-              <LayoutDashboard className="h-12 w-12 text-[#7dd87d] mb-4" />
-              <CardTitle>Pre-built Boards</CardTitle>
-              <CardDescription>
-                Get started instantly with our Marketing and Product Build boards, designed for indie developers.
-              </CardDescription>
-            </CardHeader>
-          </Card>
+      {/* Floating orbs for visual interest */}
+      <div className="absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-xl animate-float" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }} />
 
-          <Card>
-            <CardHeader>
-              <Zap className="h-12 w-12 text-[#7dd87d] mb-4" />
-              <CardTitle>Drag & Drop</CardTitle>
-              <CardDescription>
-                Intuitive drag-and-drop interface with swimlanes to organize your tasks by workflow stages.
-              </CardDescription>
-            </CardHeader>
-          </Card>
+      <div className="container mx-auto px-4 py-16">
+        {/* Hero Section */}
+        <motion.section
+          className="text-center mb-32 relative"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="mb-6"
+          >
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Your Business
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient">
+                Command Center
+              </span>
+            </h1>
+          </motion.div>
 
-          <Card>
-            <CardHeader>
-              <Users className="h-12 w-12 text-[#7dd87d] mb-4" />
-              <CardTitle>Custom Workflows</CardTitle>
-              <CardDescription>
-                Create unlimited custom boards with your own columns and swimlanes to match your process.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </section>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.2 }}
+            className="text-xl md:text-2xl text-foreground/80 mb-10 max-w-3xl mx-auto leading-relaxed font-medium"
+          >
+            Jimbula brings your ideas, projects, finances, and schedule together.
+            Built for small and medium businesses that need <span className="text-primary font-bold">clarity</span>, <span className="text-accent font-bold">productivity</span>, and <span className="text-primary font-bold">results</span>.
+          </motion.p>
 
-      {/* Marketing Board Preview */}
-      <section className="mb-20">
-        <div className="bg-[#2d4a4a] rounded-lg p-8 border border-[#4a6a6a]">
-          <h2 className="text-3xl font-bold text-white mb-4">Marketing Board</h2>
-          <p className="text-gray-300 mb-6">
-            Organize all your marketing efforts in one place with dedicated swimlanes for:
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-white">Outbound</h3>
-                <p className="text-sm text-gray-400">
-                  Cold email campaigns, direct outreach
-                </p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.2 }}
+            className="flex flex-wrap gap-4 justify-center"
+          >
+            <Link href="/auth">
+              <Button size="lg" className="text-lg px-10 py-6 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group">
+                Start Free Trial
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link href="/pricing">
+              <Button size="lg" variant="outline" className="text-lg px-10 py-6 border-2 hover:bg-primary/5 hover:border-primary hover:scale-105 transition-all duration-300">
+                View Pricing
+              </Button>
+            </Link>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.15 }}
+            className="text-sm text-muted-foreground mt-6"
+          >
+            7-day free trial • No credit card required • Cancel anytime
+          </motion.p>
+        </motion.section>
+
+        {/* Key Benefits Section */}
+        <motion.section
+          className="mb-32"
+          {...staggerContainer}
+        >
+          <motion.div {...fadeInUp} className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Why Businesses Choose Jimbula
+              </span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Stop juggling multiple tools. Get complete visibility and control over your business operations.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={Eye}
+              title="Complete Visibility"
+              description="See everything at a glance. Track projects, finances, and schedules from one unified dashboard. No more switching between apps or losing track of important details."
+              index={0}
+            />
+            <FeatureCard
+              icon={TrendingUp}
+              title="Improved Productivity"
+              description="Organize work efficiently with visual Kanban boards, weekly planners, and customizable swimlanes. Your team knows exactly what to work on and when."
+              index={1}
+            />
+            <FeatureCard
+              icon={Target}
+              title="Better Planning"
+              description="Make informed decisions with clear financial tracking, idea management, and integrated calendar views. Plan ahead with confidence and adapt quickly."
+              index={2}
+            />
+          </div>
+        </motion.section>
+
+        {/* Core Features */}
+        <section id="features" className="mb-32">
+          <motion.div {...fadeInUp} className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Four Powerful Tools, One Platform
+              </span>
+            </h2>
+          </motion.div>
+
+          {/* Ideas Board */}
+          <motion.div {...fadeInUp} className="mb-20">
+            <Card className="overflow-hidden glass-strong shadow-2xl">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="p-10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-accent">
+                      <Lightbulb className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-4xl font-bold">Ideas Board</h3>
+                  </div>
+
+                  <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
+                    Never lose a great idea again. Capture, organize, and collaborate on ideas with a visual, flexible board system inspired by creative workflows.
+                  </p>
+
+                  <motion.div className="space-y-5 mb-8" {...staggerContainer}>
+                    {[
+                      { title: 'Multiple Boards', desc: 'Create unlimited boards for different projects, teams, or brainstorming sessions' },
+                      { title: 'Visual Sticky Notes', desc: 'Drag-and-drop colorful sticky notes anywhere on the canvas, just like a physical whiteboard' },
+                      { title: 'Organized Sections', desc: 'Add vertical columns to group related ideas and keep your boards structured' },
+                      { title: 'Team Collaboration', desc: 'Share boards with collaborators, leave comments, and favorite important boards' }
+                    ].map((feature, i) => (
+                      <motion.div
+                        key={i}
+                        {...fadeInUp}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex gap-4 items-start group hover:translate-x-2 transition-transform duration-200"
+                      >
+                        <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <div>
+                          <h4 className="font-bold text-foreground text-base mb-1">{feature.title}</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+
+                  <div className="glass-strong p-6 rounded-2xl border-2 border-primary/10">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      <h4 className="text-lg font-bold text-foreground">How It Works</h4>
+                    </div>
+                    <ol className="space-y-3">
+                      {[
+                        'Create a new board from the gallery view with a custom name',
+                        'Add sticky notes with different colors to capture ideas',
+                        'Drag notes around the canvas to organize visually',
+                        'Create sections (columns) to categorize your ideas',
+                        'Share with team members and collaborate with comments',
+                        'Clone boards to reuse templates or archive boards when done'
+                      ].map((step, i) => (
+                        <li key={i} className="flex gap-3 items-start text-foreground/90">
+                          <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent text-white text-sm flex items-center justify-center font-bold shadow-lg">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm leading-relaxed pt-0.5">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-white dark:from-orange-950/20 dark:via-amber-950/10 dark:to-card p-12 flex items-center justify-center">
+                  <div className="text-center">
+                    <motion.div
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Lightbulb className="h-40 w-40 text-primary mx-auto mb-6 drop-shadow-2xl" />
+                    </motion.div>
+                    <p className="text-lg font-semibold text-foreground">Capture & organize ideas visually</p>
+                  </div>
+                </div>
               </div>
+            </Card>
+          </motion.div>
+
+          {/* Project Planner */}
+          <motion.div {...fadeInUp} className="mb-20">
+            <Card className="overflow-hidden glass-strong shadow-2xl">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-white dark:from-orange-950/20 dark:via-amber-950/10 dark:to-card p-12 flex items-center justify-center order-2 lg:order-1">
+                  <div className="text-center">
+                    <motion.div
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <KanbanSquare className="h-40 w-40 text-primary mx-auto mb-6 drop-shadow-2xl" />
+                    </motion.div>
+                    <p className="text-lg font-semibold text-foreground">Plan and track work visually</p>
+                  </div>
+                </div>
+
+                <div className="p-10 order-1 lg:order-2">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-accent">
+                      <KanbanSquare className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-4xl font-bold">Project Planner</h3>
+                  </div>
+
+                  <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
+                    Powerful Kanban-style planning with weekly views and custom swimlanes. Organize tasks by priority, team, or any workflow that fits your business.
+                  </p>
+
+                  <motion.div className="space-y-5 mb-8" {...staggerContainer}>
+                    {[
+                      { title: 'Weekly Planning View', desc: 'Organize tasks by week with clear visibility across the entire month' },
+                      { title: 'Custom Swimlanes', desc: 'Create priority levels, team lanes, or project phases - organize your way' },
+                      { title: 'Subtasks & Dependencies', desc: 'Break down complex tasks with nested subtasks and track blockers' },
+                      { title: 'Version History', desc: 'Travel back in time and restore previous versions of your planner' }
+                    ].map((feature, i) => (
+                      <motion.div
+                        key={i}
+                        {...fadeInUp}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex gap-4 items-start group hover:translate-x-2 transition-transform duration-200"
+                      >
+                        <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <div>
+                          <h4 className="font-bold text-foreground text-base mb-1">{feature.title}</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+
+                  <div className="glass-strong p-6 rounded-2xl border-2 border-primary/10">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      <h4 className="text-lg font-bold text-foreground">How It Works</h4>
+                    </div>
+                    <ol className="space-y-3">
+                      {[
+                        'View your month divided into weeks with customizable swimlanes',
+                        'Create tasks and drag them to any week/swimlane combination',
+                        'Add subtasks that appear as mini-cards beneath parent tasks',
+                        'Rename swimlanes to match your workflow (Priority 1-4 by default)',
+                        'Mark tasks as blocked and track dependencies',
+                        'Use version history to restore previous planning states'
+                      ].map((step, i) => (
+                        <li key={i} className="flex gap-3 items-start text-foreground/90">
+                          <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent text-white text-sm flex items-center justify-center font-bold shadow-lg">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm leading-relaxed pt-0.5">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Finance Tracker */}
+          <motion.div {...fadeInUp} className="mb-20">
+            <Card className="overflow-hidden glass-strong shadow-2xl">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="p-10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-accent">
+                      <Wallet className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-4xl font-bold">Finance Tracker</h3>
+                  </div>
+
+                  <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
+                    Keep your business finances organized with simple income and expense tracking. See your financial health at a glance with visual charts and detailed tables.
+                  </p>
+
+                  <motion.div className="space-y-5 mb-8" {...staggerContainer}>
+                    {[
+                      { title: 'Separate Income & Expenses', desc: 'Two dedicated tables with color-coded displays for clear financial visibility' },
+                      { title: 'Visual Charts', desc: 'Bar charts and pie charts show spending patterns and income sources instantly' },
+                      { title: 'Recurring Transactions', desc: 'Mark subscriptions and regular income as recurring for accurate planning' },
+                      { title: 'Multi-Currency Support', desc: 'Track finances in USD, EUR, GBP, and 6+ other major currencies' }
+                    ].map((feature, i) => (
+                      <motion.div
+                        key={i}
+                        {...fadeInUp}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex gap-4 items-start group hover:translate-x-2 transition-transform duration-200"
+                      >
+                        <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <div>
+                          <h4 className="font-bold text-foreground text-base mb-1">{feature.title}</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+
+                  <div className="glass-strong p-6 rounded-2xl border-2 border-primary/10">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      <h4 className="text-lg font-bold text-foreground">How It Works</h4>
+                    </div>
+                    <ol className="space-y-3">
+                      {[
+                        'Add income and expense transactions with categories and dates',
+                        'View separate tables for income (green) and expenses (red)',
+                        'Edit existing transactions by clicking the pencil icon',
+                        'Filter by month, category, or view yearly/monthly summaries',
+                        'Check visual charts to understand spending patterns',
+                        'Mark recurring items to track subscriptions and regular income'
+                      ].map((step, i) => (
+                        <li key={i} className="flex gap-3 items-start text-foreground/90">
+                          <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent text-white text-sm flex items-center justify-center font-bold shadow-lg">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm leading-relaxed pt-0.5">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-white dark:from-orange-950/20 dark:via-amber-950/10 dark:to-card p-12 flex items-center justify-center">
+                  <div className="text-center">
+                    <motion.div
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Wallet className="h-40 w-40 text-primary mx-auto mb-6 drop-shadow-2xl" />
+                    </motion.div>
+                    <p className="text-lg font-semibold text-foreground">Track every dollar with clarity</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Calendar */}
+          <motion.div {...fadeInUp} className="mb-20">
+            <Card className="overflow-hidden glass-strong shadow-2xl">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-white dark:from-orange-950/20 dark:via-amber-950/10 dark:to-card p-12 flex items-center justify-center order-2 lg:order-1">
+                  <div className="text-center">
+                    <motion.div
+                      animate={{ rotateY: [0, 10, 0] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <CalendarIcon className="h-40 w-40 text-primary mx-auto mb-6 drop-shadow-2xl" />
+                    </motion.div>
+                    <p className="text-lg font-semibold text-foreground">Schedule and time management</p>
+                  </div>
+                </div>
+
+                <div className="p-10 order-1 lg:order-2">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-accent">
+                      <CalendarIcon className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-4xl font-bold">Calendar</h3>
+                  </div>
+
+                  <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
+                    Flexible calendar with multiple view modes and color-coded events. Perfect for scheduling meetings, deadlines, and important business milestones.
+                  </p>
+
+                  <motion.div className="space-y-5 mb-8" {...staggerContainer}>
+                    {[
+                      { title: 'Multiple View Modes', desc: 'Switch between day, week, week overview, and month views instantly' },
+                      { title: 'Color-Coded Events', desc: 'Choose from 8 colors to categorize meetings, deadlines, and events visually' },
+                      { title: 'Time Blocking', desc: 'Set specific start and end times for events to plan your day precisely' },
+                      { title: 'Event Details', desc: 'Add descriptions and notes to keep all important context in one place' }
+                    ].map((feature, i) => (
+                      <motion.div
+                        key={i}
+                        {...fadeInUp}
+                        transition={{ delay: i * 0.1 }}
+                        className="flex gap-4 items-start group hover:translate-x-2 transition-transform duration-200"
+                      >
+                        <CheckCircle className="h-6 w-6 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <div>
+                          <h4 className="font-bold text-foreground text-base mb-1">{feature.title}</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+
+                  <div className="glass-strong p-6 rounded-2xl border-2 border-primary/10">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      <h4 className="text-lg font-bold text-foreground">How It Works</h4>
+                    </div>
+                    <ol className="space-y-3">
+                      {[
+                        'Choose your preferred view: day, week, week overview, or month',
+                        'Click any date or time slot to create a new event',
+                        'Add title, description, start/end times, and pick a color',
+                        'Events appear color-coded in your calendar view',
+                        'Edit or delete events by clicking on them',
+                        'Navigate between dates using the arrow controls'
+                      ].map((step, i) => (
+                        <li key={i} className="flex gap-3 items-start text-foreground/90">
+                          <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-accent text-white text-sm flex items-center justify-center font-bold shadow-lg">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm leading-relaxed pt-0.5">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        </section>
+
+        {/* Integration Benefits */}
+        <motion.section {...fadeInUp} className="mb-32">
+          <div className="glass-strong rounded-3xl p-12 shadow-2xl">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  It All Works Together
+                </span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Jimbula isn&apos;t just four separate tools—it&apos;s an integrated system designed to keep your entire business in sync.
+              </p>
             </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-white">Organic</h3>
-                <p className="text-sm text-gray-400">
-                  Build-in-public, Reddit, content marketing
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-white">Affiliate/Partnership</h3>
-                <p className="text-sm text-gray-400">
-                  Creator partnerships, affiliate programs
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-white">Paid Ads</h3>
-                <p className="text-sm text-gray-400">
-                  Google Ads, social media advertising
-                </p>
-              </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                { icon: Zap, title: 'Single Dashboard', desc: 'Everything accessible from one unified interface. No context switching.' },
+                { icon: Users, title: 'Team Collaboration', desc: 'Share boards, assign tasks, and keep everyone aligned on priorities.' },
+                { icon: Eye, title: 'Full Visibility', desc: 'See projects, finances, and schedules side by side. Make better decisions.' },
+                { icon: Target, title: 'Stay Focused', desc: 'Less tool management, more productive work. Focus on growing your business.' }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  {...fadeInUp}
+                  transition={{ delay: i * 0.1 }}
+                  className="p-6 rounded-2xl glass text-center group hover:-translate-y-2 transition-all duration-300"
+                >
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-primary to-accent p-0.5">
+                    <div className="w-full h-full bg-card rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <item.icon className="h-8 w-8 text-primary" />
+                    </div>
+                  </div>
+                  <h4 className="font-bold mb-2 text-foreground">{item.title}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </motion.section>
 
-      {/* Product Board Preview */}
-      <section className="mb-20">
-        <div className="bg-[#2d4a4a] rounded-lg p-8 border border-[#4a6a6a]">
-          <h2 className="text-3xl font-bold text-white mb-4">Product Build Board</h2>
-          <p className="text-gray-300 mb-6">
-            Manage your entire development lifecycle with dedicated swimlanes for:
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-white">Build</h3>
-                <p className="text-sm text-gray-400">
-                  Feature development, implementation
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-white">Test</h3>
-                <p className="text-sm text-gray-400">
-                  Quality assurance, testing
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-white">Validation/Feedback</h3>
-                <p className="text-sm text-gray-400">
-                  User feedback, validation sessions
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-[#7dd87d] shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-white">Bug Fixes/New Features</h3>
-                <p className="text-sm text-gray-400">
-                  Bug tracking, feature requests
-                </p>
-              </div>
+        {/* Stats Section */}
+        <motion.section {...fadeInUp} className="mb-32">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Built for Modern Businesses
+              </span>
+            </h2>
+            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+              Whether you&apos;re a growing startup, a consulting agency, or a product team, Jimbula adapts to how you work.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto">
+              {[
+                { value: 4, suffix: '', label: 'Core Tools' },
+                { value: 1, suffix: '', label: 'Unified Platform' },
+                { value: 0, suffix: '∞', label: 'Possibilities' }
+              ].map((stat, i) => (
+                <motion.div
+                  key={i}
+                  {...fadeInUp}
+                  transition={{ delay: i * 0.2 }}
+                  className="relative"
+                >
+                  <div className="text-6xl md:text-7xl font-bold text-primary mb-3">
+                    {stat.value === 0 ? stat.suffix : <AnimatedNumber value={stat.value} suffix={stat.suffix} />}
+                  </div>
+                  <p className="text-lg text-muted-foreground font-medium">{stat.label}</p>
+                  {i < 2 && <div className="hidden md:block absolute top-1/2 -right-6 w-px h-16 bg-border -translate-y-1/2" />}
+                </motion.div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </motion.section>
 
-      {/* CTA Section */}
-      <section className="text-center bg-[#2d4a4a] rounded-lg p-12 border border-[#4a6a6a]">
-        <h2 className="text-4xl font-bold text-white mb-4">
-          Ready to streamline your workflow?
-        </h2>
-        <p className="text-xl text-gray-300 mb-8">
-          Start your 7-day free trial today. No credit card required.
-        </p>
-        <Link href="/auth">
-          <Button size="lg" className="text-lg px-12">
-            Get Started Now
-          </Button>
-        </Link>
-      </section>
+        {/* Final CTA */}
+        <motion.section
+          {...fadeInUp}
+          className="text-center glass-strong rounded-3xl p-16 shadow-2xl relative overflow-hidden"
+        >
+          {/* Animated gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-transparent opacity-50" />
+
+          <div className="relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Ready to Transform Your Workflow?
+              </span>
+            </h2>
+
+            <p className="text-xl text-foreground/80 mb-10 max-w-2xl mx-auto leading-relaxed">
+              Join businesses that have simplified their operations with Jimbula.
+              Start your free trial today—no credit card required.
+            </p>
+
+            <motion.div
+              className="flex flex-wrap gap-4 justify-center mb-8"
+              {...staggerContainer}
+            >
+              <Link href="/auth">
+                <Button size="lg" className="text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group">
+                  Start Free Trial
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="/pricing">
+                <Button size="lg" variant="outline" className="text-lg px-12 py-6 border-2 hover:bg-primary/5 hover:border-primary hover:scale-105 transition-all duration-300">
+                  See Pricing
+                </Button>
+              </Link>
+            </motion.div>
+
+            <p className="text-sm text-muted-foreground">
+              7-day free trial • Full access to all features • Cancel anytime
+            </p>
+          </div>
+        </motion.section>
+      </div>
     </div>
   )
 }
