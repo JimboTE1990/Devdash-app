@@ -46,6 +46,7 @@ function CheckoutPageContent() {
     personal: {
       name: 'Personal Plan',
       price: 14.99,
+      comingSoon: false,
       features: [
         'Access to all features',
         'Pre-built Marketing board',
@@ -56,7 +57,8 @@ function CheckoutPageContent() {
     },
     enterprise: {
       name: 'Enterprise Plan',
-      price: 100,
+      price: 0,
+      comingSoon: true,
       features: [
         'Everything in Personal Plan',
         'Multiple user accounts',
@@ -185,16 +187,16 @@ function CheckoutPageContent() {
                       <button
                         type="button"
                         onClick={() => setSelectedPlan('enterprise')}
-                        className={`p-4 rounded-lg border-2 transition-all ${
-                          selectedPlan === 'enterprise'
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border hover:border-primary/50'
-                        }`}
+                        disabled
+                        className="p-4 rounded-lg border-2 border-border bg-muted/50 opacity-60 cursor-not-allowed relative"
                       >
+                        <div className="absolute top-2 right-2 bg-gradient-to-r from-primary to-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          COMING SOON
+                        </div>
                         <div className="text-left">
                           <div className="font-semibold text-foreground">Enterprise</div>
-                          <div className="text-2xl font-bold text-primary mt-1">£100</div>
-                          <div className="text-xs text-muted-foreground">per month</div>
+                          <div className="text-2xl font-bold text-muted-foreground mt-1">Launching Soon</div>
+                          <div className="text-xs text-muted-foreground">Team features</div>
                         </div>
                       </button>
                     </div>
