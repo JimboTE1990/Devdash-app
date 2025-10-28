@@ -1,12 +1,49 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { CheckCircle, Loader2 } from 'lucide-react'
 
 export default function PricingPage() {
+  const [waitlistEmail, setWaitlistEmail] = useState('')
+  const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [waitlistMessage, setWaitlistMessage] = useState('')
+
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setWaitlistStatus('loading')
+
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: waitlistEmail, plan: 'enterprise' })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setWaitlistStatus('success')
+        setWaitlistMessage('Thanks! We\'ll notify you when the Enterprise plan launches.')
+        setWaitlistEmail('')
+      } else {
+        setWaitlistStatus('error')
+        setWaitlistMessage(data.error || 'Something went wrong. Please try again.')
+      }
+    } catch (error) {
+      setWaitlistStatus('error')
+      setWaitlistMessage('Failed to join waiting list. Please try again.')
+    }
+
+    setTimeout(() => {
+      setWaitlistStatus('idle')
+      setWaitlistMessage('')
+    }, 5000)
+  }
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -112,12 +149,17 @@ export default function PricingPage() {
 
             {/* Enterprise Plan */}
             <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
-              <Card className="glass-strong shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-primary/10 hover:border-primary/30 h-full">
+              <Card className="glass-strong shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-primary/10 hover:border-primary/30 h-full relative overflow-hidden">
+                {/* Coming Soon Badge */}
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-primary to-accent text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                  COMING SOON
+                </div>
+
                 <CardHeader>
                   <CardTitle className="text-2xl">Enterprise Plan</CardTitle>
                   <CardDescription>For small business teams who need to collaborate and manage projects together</CardDescription>
                   <div className="mt-4">
-                    <span className="text-2xl font-bold text-foreground">Contact Sales</span>
+                    <span className="text-2xl font-bold text-foreground">Launching Soon</span>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -145,15 +187,38 @@ export default function PricingPage() {
 
                   <div className="space-y-4">
                     <div className="pt-2 border-t border-border">
-                      <div className="text-sm font-medium text-foreground text-center mb-4">Get in touch</div>
-                      <Link href="mailto:sales@devdash.com" className="block">
-                        <Button className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold h-auto py-3 shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                          Contact Sales Team
+                      <div className="text-sm font-medium text-foreground text-center mb-4">Join the waiting list</div>
+                      <form onSubmit={handleWaitlistSubmit} className="space-y-3">
+                        <Input
+                          type="email"
+                          placeholder="Enter your email"
+                          value={waitlistEmail}
+                          onChange={(e) => setWaitlistEmail(e.target.value)}
+                          required
+                          disabled={waitlistStatus === 'loading' || waitlistStatus === 'success'}
+                          className="w-full"
+                        />
+                        <Button
+                          type="submit"
+                          disabled={waitlistStatus === 'loading' || waitlistStatus === 'success'}
+                          className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold h-auto py-3 shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {waitlistStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          {waitlistStatus === 'success' ? '✓ You\'re on the list!' : 'Notify Me at Launch'}
                         </Button>
-                      </Link>
-                      <p className="text-xs text-muted-foreground text-center mt-3">
-                        Custom pricing based on team size
-                      </p>
+                      </form>
+                      {waitlistMessage && (
+                        <p className={`text-xs text-center mt-3 ${
+                          waitlistStatus === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                        }`}>
+                          {waitlistMessage}
+                        </p>
+                      )}
+                      {!waitlistMessage && (
+                        <p className="text-xs text-muted-foreground text-center mt-3">
+                          Be the first to know when we launch team features
+                        </p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
