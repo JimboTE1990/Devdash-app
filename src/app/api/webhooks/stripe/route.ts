@@ -53,6 +53,10 @@ export async function POST(req: NextRequest) {
               subscription_start_date: new Date().toISOString(),
               stripe_customer_id: session.customer as string,
               stripe_subscription_id: session.subscription as string,
+              // Clear deletion fields when user upgrades (reactivates)
+              deletion_scheduled_date: null,
+              deletion_warning_sent: false,
+              last_downgrade_date: null,
             })
             .eq('id', session.metadata.userId)
 
@@ -123,11 +127,18 @@ export async function POST(req: NextRequest) {
           .single()
 
         if (profile) {
+          // Calculate deletion date: 12 months after subscription cancellation (GDPR compliance)
+          const now = new Date()
+          const deletionDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000) // 12 months
+
           await supabaseAdmin
             .from('profiles')
             .update({
               plan: 'free',
               stripe_subscription_id: null,
+              last_downgrade_date: now.toISOString(),
+              deletion_scheduled_date: deletionDate.toISOString(),
+              deletion_warning_sent: false,
             })
             .eq('id', profile.id)
         }

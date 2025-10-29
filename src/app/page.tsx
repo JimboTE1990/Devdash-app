@@ -48,10 +48,10 @@ export default function LandingPage() {
       <div className="absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-xl animate-float" />
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }} />
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Hero Section */}
         <motion.section
-          className="text-center mb-32 relative"
+          className="text-center mb-16 sm:mb-24 lg:mb-32 relative"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -62,7 +62,7 @@ export default function LandingPage() {
             transition={{ duration: 0.3 }}
             className="mb-6"
           >
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight px-4">
               <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Your Business
               </span>
@@ -77,7 +77,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.2 }}
-            className="text-xl md:text-2xl text-foreground/80 mb-10 max-w-3xl mx-auto leading-relaxed font-medium"
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 mb-6 sm:mb-8 lg:mb-10 max-w-3xl mx-auto leading-relaxed px-4"
           >
             Jimbula brings your ideas, projects, finances, and schedule together.
             Built for small and medium businesses that need <span className="text-primary font-bold">clarity</span>, <span className="text-accent font-bold">productivity</span>, and <span className="text-primary font-bold">results</span>.
@@ -87,16 +87,16 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.2 }}
-            className="flex flex-wrap gap-4 justify-center"
+            className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center px-4"
           >
-            <Link href="/auth">
-              <Button size="lg" className="text-lg px-10 py-6 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group">
+            <Link href="/auth" className="w-full sm:w-auto max-w-md sm:max-w-none">
+              <Button size="lg" className="w-full text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group">
                 Start Free Trial
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 h-4 sm:h-5 w-4 sm:w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link href="/pricing">
-              <Button size="lg" variant="outline" className="text-lg px-10 py-6 border-2 hover:bg-primary/5 hover:border-primary hover:scale-105 transition-all duration-300">
+            <Link href="/pricing" className="w-full sm:w-auto max-w-md sm:max-w-none">
+              <Button size="lg" variant="outline" className="w-full text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 border-2 hover:bg-primary/5 hover:border-primary hover:scale-105 transition-all duration-300">
                 View Pricing
               </Button>
             </Link>
@@ -106,7 +106,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.15 }}
-            className="text-sm text-muted-foreground mt-6"
+            className="text-xs sm:text-sm text-muted-foreground mt-4 sm:mt-6 px-4"
           >
             7-day free trial • No credit card required • Cancel anytime
           </motion.p>
@@ -114,21 +114,21 @@ export default function LandingPage() {
 
         {/* Key Benefits Section */}
         <motion.section
-          className="mb-32"
+          className="mb-16 sm:mb-24 lg:mb-32"
           {...staggerContainer}
         >
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <motion.div {...fadeInUp} className="text-center mb-8 sm:mb-12 lg:mb-16 px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
               <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Why Businesses Choose Jimbula
               </span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Stop juggling multiple tools. Get complete visibility and control over your business operations.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             <FeatureCard
               icon={Eye}
               title="Complete Visibility"
@@ -151,9 +151,9 @@ export default function LandingPage() {
         </motion.section>
 
         {/* Core Features */}
-        <section id="features" className="mb-32">
-          <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+        <section id="features" className="mb-16 sm:mb-24 lg:mb-32">
+          <motion.div {...fadeInUp} className="text-center mb-8 sm:mb-12 lg:mb-16 px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
               <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Four Powerful Tools, One Platform
               </span>
@@ -161,18 +161,18 @@ export default function LandingPage() {
           </motion.div>
 
           {/* Ideas Board */}
-          <motion.div {...fadeInUp} className="mb-20">
+          <motion.div {...fadeInUp} className="mb-12 sm:mb-16 lg:mb-20">
             <Card className="overflow-hidden glass-strong shadow-2xl">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div className="p-10">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-accent">
-                      <Lightbulb className="h-8 w-8 text-white" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+                <div className="p-6 sm:p-8 lg:p-10">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-primary to-accent">
+                      <Lightbulb className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                     </div>
-                    <h3 className="text-4xl font-bold">Ideas Board</h3>
+                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Ideas Board</h3>
                   </div>
 
-                  <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
+                  <p className="text-base sm:text-lg text-foreground/80 mb-6 sm:mb-8 leading-relaxed">
                     Never lose a great idea again. Capture, organize, and collaborate on ideas with a visual, flexible board system inspired by creative workflows.
                   </p>
 

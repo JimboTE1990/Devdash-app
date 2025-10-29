@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { UpgradePrompt } from '@/components/upgrade/UpgradePrompt'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -84,7 +85,7 @@ type ViewMode = 'gallery' | 'board'
 type CategoryFilter = 'all' | 'recent' | 'shared' | 'favorites'
 
 export default function IdeasPage() {
-  const { user } = useAuth()
+  const { user, requiresUpgrade } = useAuth()
   const [boards, setBoards] = useState<Board[]>([])
   const [currentBoard, setCurrentBoard] = useState<Board | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('gallery')
@@ -433,6 +434,11 @@ export default function IdeasPage() {
     if (diffDays < 7) return `${diffDays}d ago`
 
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  // Show upgrade prompt if trial expired
+  if (requiresUpgrade) {
+    return <UpgradePrompt mode="page" />
   }
 
   // Gallery View

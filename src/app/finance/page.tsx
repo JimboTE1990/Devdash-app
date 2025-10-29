@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { UpgradePrompt } from '@/components/upgrade/UpgradePrompt'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -50,7 +51,7 @@ const CURRENCIES = [
 ]
 
 export default function FinancePage() {
-  const { user } = useAuth()
+  const { user, requiresUpgrade } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [showDialog, setShowDialog] = useState(false)
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('income')
@@ -350,6 +351,11 @@ export default function FinancePage() {
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + getAnnualizedAmount(t), 0)
   const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + getAnnualizedAmount(t), 0)
   const netIncome = totalIncome - totalExpenses
+
+  // Show upgrade prompt if trial expired
+  if (requiresUpgrade) {
+    return <UpgradePrompt mode="page" />
+  }
 
   return (
     <div className="min-h-screen bg-background">

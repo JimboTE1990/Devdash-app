@@ -3,12 +3,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { CheckCircle, Loader2 } from 'lucide-react'
+import { CheckCircle, Loader2, Crown } from 'lucide-react'
 
 export default function PricingPage() {
+  const { user } = useAuth()
   const [waitlistEmail, setWaitlistEmail] = useState('')
   const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [waitlistMessage, setWaitlistMessage] = useState('')
@@ -61,6 +63,40 @@ export default function PricingPage() {
     viewport: { once: true }
   }
 
+  // Prevent duplicate subscriptions - if user is already premium, show different UI
+  if (user?.plan === 'premium' && !user.isLifetimeFree) {
+    return (
+      <div className="relative overflow-hidden min-h-screen">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-amber-50 to-white dark:from-orange-950/10 dark:via-amber-950/5 dark:to-background -z-10" />
+
+        <div className="container mx-auto px-4 py-16">
+          <motion.div {...fadeInUp} className="max-w-2xl mx-auto text-center">
+            <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent">
+              <Crown className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold mb-4">You're Already Subscribed!</h1>
+            <p className="text-xl text-muted-foreground mb-8">
+              You already have an active Premium subscription. Manage your subscription in your profile settings.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <Link href="/profile">
+                <Button size="lg" className="bg-gradient-to-r from-primary to-accent">
+                  Go to Profile
+                </Button>
+              </Link>
+              <Link href="/dashboard">
+                <Button size="lg" variant="outline">
+                  Back to Dashboard
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="relative overflow-hidden">
       {/* Animated background gradient */}
@@ -70,35 +106,35 @@ export default function PricingPage() {
       <div className="absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="max-w-4xl mx-auto">
-          <motion.div {...fadeInUp} className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <motion.div {...fadeInUp} className="text-center mb-8 sm:mb-10 lg:mb-12 px-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
               <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Simple, transparent pricing
               </span>
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
               Choose the plan that fits your needs
             </p>
           </motion.div>
 
           <motion.div
             {...staggerContainer}
-            className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto mb-8 sm:mb-10 lg:mb-12"
           >
             {/* Personal Plan */}
             <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
               <Card className="glass-strong shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-primary/10 hover:border-primary/30 h-full">
-                <CardHeader>
-                  <CardTitle className="text-2xl">Personal Plan</CardTitle>
-                  <CardDescription>For indie developers and business owners ready to elevate their planning and productivity</CardDescription>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold text-foreground">£14.99</span>
-                    <span className="text-muted-foreground ml-2">per month</span>
+                <CardHeader className="space-y-3">
+                  <CardTitle className="text-xl sm:text-2xl">Personal Plan</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">For indie developers and business owners ready to elevate their planning and productivity</CardDescription>
+                  <div className="mt-3 sm:mt-4">
+                    <span className="text-3xl sm:text-4xl font-bold text-foreground">£14.99</span>
+                    <span className="text-sm sm:text-base text-muted-foreground ml-2">per month</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4 sm:space-y-6">
                   <ul className="space-y-3">
                     {[
                       'Access to all features',
@@ -123,22 +159,22 @@ export default function PricingPage() {
 
                   <div className="space-y-4">
                     <div className="pt-2 border-t border-border">
-                      <div className="text-sm font-medium text-foreground text-center mb-4">Choose your plan</div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Link href="/auth" className="flex-1">
-                          <Button className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold h-auto py-3 flex flex-col items-center gap-1 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                      <div className="text-xs sm:text-sm font-medium text-foreground text-center mb-3 sm:mb-4">Choose your plan</div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                        <Link href="/auth" className="w-full">
+                          <Button className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold h-auto py-2.5 sm:py-3 flex flex-col items-center gap-0.5 sm:gap-1 shadow-lg hover:shadow-xl transition-all hover:scale-105">
                             <span className="text-sm">Free Trial</span>
                             <span className="text-xs opacity-90">7 days free</span>
                           </Button>
                         </Link>
-                        <Link href="/checkout?plan=personal" className="flex-1">
-                          <Button variant="outline" className="w-full border-2 border-primary text-primary hover:bg-primary/10 h-auto py-3 flex flex-col items-center gap-1 transition-all hover:scale-105">
+                        <Link href="/checkout?plan=personal" className="w-full">
+                          <Button variant="outline" className="w-full border-2 border-primary text-primary hover:bg-primary/10 h-auto py-2.5 sm:py-3 flex flex-col items-center gap-0.5 sm:gap-1 transition-all hover:scale-105">
                             <span className="text-sm">Premium</span>
                             <span className="text-xs opacity-90">£14.99/month</span>
                           </Button>
                         </Link>
                       </div>
-                      <p className="text-xs text-muted-foreground text-center mt-3">
+                      <p className="text-xs text-muted-foreground text-center mt-2 sm:mt-3">
                         Start with a free trial or go premium right away
                       </p>
                     </div>

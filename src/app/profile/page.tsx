@@ -128,30 +128,30 @@ export default function ProfilePage() {
       <div className="absolute top-20 right-10 w-72 h-72 bg-primary/5 rounded-full blur-xl animate-float" />
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }} />
 
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
           {/* Header with Avatar */}
-          <motion.div {...fadeInUp} className="text-center">
-            <div className="relative inline-block mb-6">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent p-0.5">
+          <motion.div {...fadeInUp} className="text-center px-4">
+            <div className="relative inline-block mb-4 sm:mb-6">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary to-accent p-0.5">
                 <div className="w-full h-full rounded-full bg-card flex items-center justify-center">
-                  <span className="text-3xl font-bold text-primary">{getInitials()}</span>
+                  <span className="text-2xl sm:text-3xl font-bold text-primary">{getInitials()}</span>
                 </div>
               </div>
               {user.plan === 'premium' && (
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center border-2 border-background">
-                  <Crown className="h-4 w-4 text-white" />
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center border-2 border-background">
+                  <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
                 </div>
               )}
             </div>
-            <h1 className="text-4xl font-bold mb-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
               <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 {firstName} {lastName}
               </span>
             </h1>
-            <p className="text-foreground/70 flex items-center justify-center gap-2">
-              <Mail className="h-4 w-4" />
-              {user.email}
+            <p className="text-sm sm:text-base text-foreground/70 flex items-center justify-center gap-2">
+              <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="break-all">{user.email}</span>
             </p>
           </motion.div>
 
@@ -160,7 +160,7 @@ export default function ProfilePage() {
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4"
           >
             <motion.div variants={fadeInUp}>
               <Card className="glass-strong shadow-lg">
@@ -310,7 +310,7 @@ export default function ProfilePage() {
                           Active since {formatDate(user.subscriptionStartDate)}
                         </p>
                         <p className="text-sm text-foreground/70 mt-1">
-                          £9.99/month • Renews monthly
+                          £14.99/month • Renews monthly
                         </p>
                       </div>
                     </div>

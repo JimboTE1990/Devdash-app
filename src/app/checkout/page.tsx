@@ -128,13 +128,13 @@ function CheckoutPageContent() {
         <div className="absolute bottom-20 -right-20 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-12 max-w-6xl">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 lg:py-12 max-w-6xl">
         {/* Back button */}
         <motion.div {...fadeInUp}>
           <Button
             variant="ghost"
             onClick={() => router.back()}
-            className="mb-8 text-muted-foreground hover:text-foreground"
+            className="mb-6 sm:mb-8 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
@@ -142,37 +142,37 @@ function CheckoutPageContent() {
         </motion.div>
 
         {/* Header */}
-        <motion.div {...fadeInUp} className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-            <Crown className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Premium Upgrade</span>
+        <motion.div {...fadeInUp} className="text-center mb-6 sm:mb-10 lg:mb-12 px-4">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-3 sm:mb-4">
+            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+            <span className="text-xs sm:text-sm font-medium text-primary">Premium Upgrade</span>
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">
             Unlock Premium Features
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto">
             Get unlimited access to all features and take your productivity to the next level
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Payment Form */}
           <motion.div {...fadeInUp} transition={{ delay: 0.1 }} className="lg:col-span-2">
             <Card className="glass-strong shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-2xl text-foreground">Payment Details</CardTitle>
-                <CardDescription>Enter your payment information below</CardDescription>
+              <CardHeader className="space-y-2">
+                <CardTitle className="text-xl sm:text-2xl text-foreground">Payment Details</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Enter your payment information below</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                   {/* Plan Selection */}
                   <div className="space-y-2">
                     <Label className="text-foreground">Select Plan</Label>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <button
                         type="button"
                         onClick={() => setSelectedPlan('personal')}
-                        className={`p-4 rounded-lg border-2 transition-all ${
+                        className={`p-3 sm:p-4 rounded-lg border-2 transition-all ${
                           selectedPlan === 'personal'
                             ? 'border-primary bg-primary/10'
                             : 'border-border hover:border-primary/50'
@@ -234,7 +234,7 @@ function CheckoutPageContent() {
                   <Button
                     type="submit"
                     disabled={processing}
-                    className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold py-6 text-lg"
+                    className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold py-5 sm:py-6 text-base sm:text-lg"
                   >
                     {processing ? (
                       <span className="flex items-center gap-2">
@@ -244,7 +244,11 @@ function CheckoutPageContent() {
                     ) : (
                       <span className="flex items-center gap-2">
                         <Crown className="h-5 w-5" />
-                        Continue to Payment
+                        {selectedPlan === 'enterprise'
+                          ? 'Join Enterprise Waitlist'
+                          : canUseTrial
+                            ? 'Start 7-Day Free Trial'
+                            : 'Subscribe to Personal Plan'}
                       </span>
                     )}
                   </Button>

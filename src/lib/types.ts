@@ -9,6 +9,7 @@ export interface User {
   subscriptionStartDate?: Date
   isLifetimeFree?: boolean
   trialDurationDays?: number
+  hasUsedTrial?: boolean
   createdAt: Date
 }
 

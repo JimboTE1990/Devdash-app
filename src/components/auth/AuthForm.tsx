@@ -44,7 +44,15 @@ export default function AuthForm() {
         router.push('/auth/email-sent')
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred')
+      // Provide more helpful error messages for common Supabase Auth errors
+      let errorMessage = err.message || 'An error occurred'
+
+      // Handle email validation error from Supabase SMTP restrictions
+      if (err.message?.includes('Email address') && err.message?.includes('invalid')) {
+        errorMessage = 'Email verification is currently restricted. Please contact support or try again later. (Error: Email delivery not configured)'
+      }
+
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

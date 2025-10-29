@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
           trial_start_date: now.toISOString(),
           trial_end_date: trialEndDate.toISOString(),
           trial_duration_days: trialDurationDays,
+          has_used_trial: true,
           updated_at: now.toISOString(),
         },
         {
