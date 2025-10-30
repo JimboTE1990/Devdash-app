@@ -11,7 +11,7 @@ The ultimate project planner for indie developers and business owners. Streamlin
 - **Custom Workflows**: Create unlimited custom boards
 - **Firebase Authentication**: Secure email/password authentication
 - **7-Day Free Trial**: Full access to all features
-- **Premium Plan**: £14.99/month after trial
+- **Premium Plan**: £24.99/month after trial (Early Bird Special - 40% off £39.99)
 
 ## Tech Stack
 

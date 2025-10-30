@@ -310,7 +310,7 @@ export default function ProfilePage() {
                           Active since {formatDate(user.subscriptionStartDate)}
                         </p>
                         <p className="text-sm text-foreground/70 mt-1">
-                          £14.99/month • Renews monthly
+                          £24.99/month • Renews monthly
                         </p>
                       </div>
                     </div>

@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     // Define plan pricing
     const planPrices = {
       personal: {
-        amount: 1499, // £14.99 in pence
+        amount: 2499, // £24.99 in pence (Early Bird Special - 40% off £39.99)
         name: 'Personal Plan',
       },
       enterprise: {

@@ -45,7 +45,8 @@ function CheckoutPageContent() {
   const planDetails = {
     personal: {
       name: 'Personal Plan',
-      price: 14.99,
+      price: 24.99,
+      originalPrice: 39.99,
       comingSoon: false,
       features: [
         'Access to all features',
@@ -172,15 +173,21 @@ function CheckoutPageContent() {
                       <button
                         type="button"
                         onClick={() => setSelectedPlan('personal')}
-                        className={`p-3 sm:p-4 rounded-lg border-2 transition-all ${
+                        className={`p-3 sm:p-4 rounded-lg border-2 transition-all relative ${
                           selectedPlan === 'personal'
                             ? 'border-primary bg-primary/10'
                             : 'border-border hover:border-primary/50'
                         }`}
                       >
+                        <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                          40% OFF
+                        </div>
                         <div className="text-left">
                           <div className="font-semibold text-foreground">Personal</div>
-                          <div className="text-2xl font-bold text-primary mt-1">£14.99</div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-sm text-muted-foreground line-through">£39.99</span>
+                          </div>
+                          <div className="text-2xl font-bold text-primary">£24.99</div>
                           <div className="text-xs text-muted-foreground">per month</div>
                         </div>
                       </button>

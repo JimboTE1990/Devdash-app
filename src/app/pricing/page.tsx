@@ -125,13 +125,24 @@ export default function PricingPage() {
           >
             {/* Personal Plan */}
             <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
-              <Card className="glass-strong shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-primary/10 hover:border-primary/30 h-full">
+              <Card className="glass-strong shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-primary/10 hover:border-primary/30 h-full relative overflow-hidden">
+                {/* Early Bird Badge */}
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">
+                  40% OFF
+                </div>
                 <CardHeader className="space-y-3">
                   <CardTitle className="text-xl sm:text-2xl">Personal Plan</CardTitle>
                   <CardDescription className="text-sm sm:text-base">For indie developers and business owners ready to elevate their planning and productivity</CardDescription>
-                  <div className="mt-3 sm:mt-4">
-                    <span className="text-3xl sm:text-4xl font-bold text-foreground">£14.99</span>
-                    <span className="text-sm sm:text-base text-muted-foreground ml-2">per month</span>
+                  <div className="mt-3 sm:mt-4 space-y-1">
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg sm:text-xl text-muted-foreground line-through">£39.99</span>
+                      <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">Early Bird</span>
+                    </div>
+                    <div>
+                      <span className="text-3xl sm:text-4xl font-bold text-foreground">£24.99</span>
+                      <span className="text-sm sm:text-base text-muted-foreground ml-2">per month</span>
+                    </div>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">Limited time introductory offer</p>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4 sm:space-y-6">
@@ -170,7 +181,7 @@ export default function PricingPage() {
                         <Link href="/checkout?plan=personal" className="w-full">
                           <Button variant="outline" className="w-full border-2 border-primary text-primary hover:bg-primary/10 h-auto py-2.5 sm:py-3 flex flex-col items-center gap-0.5 sm:gap-1 transition-all hover:scale-105">
                             <span className="text-sm">Premium</span>
-                            <span className="text-xs opacity-90">£14.99/month</span>
+                            <span className="text-xs opacity-90">£24.99/month</span>
                           </Button>
                         </Link>
                       </div>
@@ -271,7 +282,7 @@ export default function PricingPage() {
               {[
                 {
                   question: 'What happens after my trial ends?',
-                  answer: 'After your 7-day trial, you\'ll need to subscribe to the Premium plan (£14.99/month) to continue using Jimbula. You can cancel anytime during the trial without being charged.'
+                  answer: 'After your 7-day trial, you\'ll need to subscribe to the Premium plan (£24.99/month early bird special) to continue using Jimbula. You can cancel anytime during the trial without being charged.'
                 },
                 {
                   question: 'Can I cancel my subscription?',
