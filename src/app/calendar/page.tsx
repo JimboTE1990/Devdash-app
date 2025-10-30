@@ -338,19 +338,67 @@ export default function CalendarPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Start Time</Label>
-                <Input
-                  type="time"
-                  value={eventStartTime}
-                  onChange={(e) => setEventStartTime(e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <select
+                    value={eventStartTime.split(':')[0] || '09'}
+                    onChange={(e) => {
+                      const minutes = eventStartTime.split(':')[1] || '00'
+                      setEventStartTime(`${e.target.value}:${minutes}`)
+                    }}
+                    className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {Array.from({ length: 24 }, (_, i) => {
+                      const hour = i.toString().padStart(2, '0')
+                      const display = i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`
+                      return <option key={hour} value={hour}>{display}</option>
+                    })}
+                  </select>
+                  <select
+                    value={eventStartTime.split(':')[1] || '00'}
+                    onChange={(e) => {
+                      const hours = eventStartTime.split(':')[0] || '09'
+                      setEventStartTime(`${hours}:${e.target.value}`)
+                    }}
+                    className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {Array.from({ length: 12 }, (_, i) => {
+                      const minute = (i * 5).toString().padStart(2, '0')
+                      return <option key={minute} value={minute}>{minute}</option>
+                    })}
+                  </select>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>End Time</Label>
-                <Input
-                  type="time"
-                  value={eventEndTime}
-                  onChange={(e) => setEventEndTime(e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <select
+                    value={eventEndTime.split(':')[0] || '10'}
+                    onChange={(e) => {
+                      const minutes = eventEndTime.split(':')[1] || '00'
+                      setEventEndTime(`${e.target.value}:${minutes}`)
+                    }}
+                    className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {Array.from({ length: 24 }, (_, i) => {
+                      const hour = i.toString().padStart(2, '0')
+                      const display = i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`
+                      return <option key={hour} value={hour}>{display}</option>
+                    })}
+                  </select>
+                  <select
+                    value={eventEndTime.split(':')[1] || '00'}
+                    onChange={(e) => {
+                      const hours = eventEndTime.split(':')[0] || '10'
+                      setEventEndTime(`${hours}:${e.target.value}`)
+                    }}
+                    className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {Array.from({ length: 12 }, (_, i) => {
+                      const minute = (i * 5).toString().padStart(2, '0')
+                      return <option key={minute} value={minute}>{minute}</option>
+                    })}
+                  </select>
+                </div>
               </div>
             </div>
             <div className="space-y-2">

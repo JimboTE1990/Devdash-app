@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Plus, Trash2, Copy, Heart, MessageSquare, Users, Grid, Clock, Star, Share2, MoreVertical, FolderOpen, Search, Edit2 } from 'lucide-react'
+import { Plus, Trash2, Copy, Heart, MessageSquare, Users, Grid, Clock, Star, Share2, MoreVertical, FolderOpen, Search, Edit2, Palette } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -113,6 +113,12 @@ export default function IdeasPage() {
   const [newSectionColor, setNewSectionColor] = useState(SECTION_COLORS[0])
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null)
   const [tempSectionName, setTempSectionName] = useState('')
+  const [showSectionColorPicker, setShowSectionColorPicker] = useState<string | null>(null)
+
+  // Note editing
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
+  const [editingNoteContent, setEditingNoteContent] = useState('')
+  const [editingNoteColor, setEditingNoteColor] = useState(COLORS[0])
 
   // Collaborator dialog
   const [showCollaboratorDialog, setShowCollaboratorDialog] = useState(false)
@@ -319,6 +325,40 @@ export default function IdeasPage() {
       }
       updateCurrentBoard(updatedBoard)
     }
+  }
+
+  const handleSectionColorChange = (sectionId: string, newColor: string) => {
+    if (!currentBoard) return
+    const updatedBoard = {
+      ...currentBoard,
+      sections: currentBoard.sections.map(s =>
+        s.id === sectionId ? { ...s, color: newColor } : s
+      ),
+    }
+    updateCurrentBoard(updatedBoard)
+    setShowSectionColorPicker(null)
+  }
+
+  const handleEditNote = (note: StickyNote) => {
+    setEditingNoteId(note.id)
+    setEditingNoteContent(note.content)
+    setEditingNoteColor(note.color)
+  }
+
+  const handleSaveNoteEdit = () => {
+    if (!currentBoard || !editingNoteId) return
+    const updatedBoard = {
+      ...currentBoard,
+      notes: currentBoard.notes.map(n =>
+        n.id === editingNoteId
+          ? { ...n, content: editingNoteContent, color: editingNoteColor }
+          : n
+      ),
+    }
+    updateCurrentBoard(updatedBoard)
+    setEditingNoteId(null)
+    setEditingNoteContent('')
+    setEditingNoteColor(COLORS[0])
   }
 
   const handleAddCollaborator = () => {
@@ -883,6 +923,30 @@ export default function IdeasPage() {
                       <h3 className="font-semibold text-sm text-foreground flex-1">{section.name}</h3>
                     )}
                     <div className="flex items-center gap-1">
+                      <div className="relative">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setShowSectionColorPicker(showSectionColorPicker === section.id ? null : section.id)}
+                        >
+                          <Palette className="h-3 w-3" />
+                        </Button>
+                        {showSectionColorPicker === section.id && (
+                          <div className="absolute top-8 right-0 z-50 bg-card border border-border rounded-lg p-2 shadow-lg flex gap-1">
+                            {SECTION_COLORS.map(color => (
+                              <button
+                                key={color}
+                                onClick={() => handleSectionColorChange(section.id, color)}
+                                className={`w-6 h-6 rounded border-2 transition-all ${
+                                  section.color === color ? 'border-primary scale-110' : 'border-border'
+                                }`}
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -932,7 +996,16 @@ export default function IdeasPage() {
               }}
               onMouseDown={(e) => handleMouseDown(e, note.id)}
             >
-              <div className="flex justify-end mb-2">
+              <div className="flex justify-end gap-1 mb-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleEditNote(note)
+                  }}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <Edit2 className="h-3 w-3" />
+                </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
@@ -1008,6 +1081,51 @@ export default function IdeasPage() {
               </Button>
               <Button onClick={handleCreateNote}>
                 Create Note
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Note Dialog */}
+      <Dialog open={editingNoteId !== null} onOpenChange={(open) => !open && setEditingNoteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Sticky Note</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Note Content</Label>
+              <Textarea
+                value={editingNoteContent}
+                onChange={(e) => setEditingNoteContent(e.target.value)}
+                placeholder="Write your idea..."
+                rows={4}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Color</Label>
+              <div className="flex gap-2">
+                {COLORS.map(color => (
+                  <button
+                    key={color}
+                    onClick={() => setEditingNoteColor(color)}
+                    className={`w-8 h-8 rounded border-2 transition-all ${
+                      editingNoteColor === color ? 'border-primary scale-110' : 'border-border'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setEditingNoteId(null)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveNoteEdit}>
+                Save Changes
               </Button>
             </div>
           </div>

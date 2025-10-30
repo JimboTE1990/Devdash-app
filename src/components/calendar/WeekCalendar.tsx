@@ -54,6 +54,71 @@ export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate
     return events.filter(event => isSameDay(new Date(event.date), date))
   }
 
+  // Check if two events overlap
+  const eventsOverlap = (event1: Event, event2: Event) => {
+    if (!event1.startTime || !event2.startTime) return false
+
+    const [start1Hours, start1Minutes] = event1.startTime.split(':').map(Number)
+    const [start2Hours, start2Minutes] = event2.startTime.split(':').map(Number)
+    const start1 = start1Hours * 60 + start1Minutes
+    const start2 = start2Hours * 60 + start2Minutes
+
+    const end1 = event1.endTime ? (() => {
+      const [endHours, endMinutes] = event1.endTime.split(':').map(Number)
+      return endHours * 60 + endMinutes
+    })() : start1 + 60
+
+    const end2 = event2.endTime ? (() => {
+      const [endHours, endMinutes] = event2.endTime.split(':').map(Number)
+      return endHours * 60 + endMinutes
+    })() : start2 + 60
+
+    return start1 < end2 && start2 < end1
+  }
+
+  // Calculate layout columns for overlapping events
+  const getEventLayout = (dayEvents: Event[]) => {
+    const sortedEvents = [...dayEvents].sort((a, b) => {
+      const aTime = a.startTime || '00:00'
+      const bTime = b.startTime || '00:00'
+      return aTime.localeCompare(bTime)
+    })
+
+    const columns: Event[][] = []
+
+    sortedEvents.forEach(event => {
+      let placed = false
+
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i]
+        const hasOverlap = column.some(existingEvent => eventsOverlap(event, existingEvent))
+
+        if (!hasOverlap) {
+          column.push(event)
+          placed = true
+          break
+        }
+      }
+
+      if (!placed) {
+        columns.push([event])
+      }
+    })
+
+    const layout: Record<string, { column: number, totalColumns: number }> = {}
+
+    columns.forEach((column, columnIndex) => {
+      column.forEach(event => {
+        layout[event.id] = {
+          column: columnIndex,
+          totalColumns: columns.length
+        }
+      })
+    })
+
+    return layout
+  }
+
   const getEventPosition = (startTime?: string) => {
     if (!startTime) return { top: 0, height: 60 }
     const [hours, minutes] = startTime.split(':').map(Number)
@@ -152,6 +217,7 @@ export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate
             <div className="flex min-w-max">
               {days.map(day => {
                 const dayEvents = getEventsForDay(day)
+                const eventLayout = getEventLayout(dayEvents)
                 return (
                   <div key={day.toString()} className="flex-1 min-w-[140px] border-r border-border">
                     {/* Day header */}
@@ -185,15 +251,21 @@ export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate
                         {dayEvents.map(event => {
                           const position = getEventPosition(event.startTime)
                           const height = getEventDuration(event.startTime, event.endTime)
+                          const layout = eventLayout[event.id]
+                          const widthPercent = layout ? (100 / layout.totalColumns) - 1 : 100
+                          const leftPercent = layout ? (layout.column * (100 / layout.totalColumns)) + 0.5 : 0
+
                           return (
                             <div
                               key={event.id}
                               draggable
                               onDragStart={() => handleDragStart(event)}
-                              className="absolute left-1 right-1 border-l-3 rounded-lg p-1.5 pointer-events-auto cursor-move hover:opacity-90 transition-all overflow-hidden shadow-sm group"
+                              className="absolute border-l-3 rounded-lg p-1.5 pointer-events-auto cursor-move hover:opacity-90 transition-all overflow-hidden shadow-sm group"
                               style={{
                                 top: `${position.top}px`,
                                 height: `${height}px`,
+                                left: `${leftPercent}%`,
+                                width: `${widthPercent}%`,
                                 borderLeftWidth: '3px',
                                 borderLeftColor: event.color,
                                 backgroundColor: `${event.color}20`,

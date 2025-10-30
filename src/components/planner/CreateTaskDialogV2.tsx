@@ -87,7 +87,7 @@ export function CreateTaskDialogV2({
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <ResizableDialogContent>
+      <ResizableDialogContent className="py-6 max-h-[85vh] overflow-y-auto">
         <DialogClose onClick={handleClose} />
         <DialogHeader>
           <DialogTitle>Create New Task</DialogTitle>
@@ -137,7 +137,11 @@ export function CreateTaskDialogV2({
               )}
             </div>
             {showCalendar && (
-              <div className="border border-[#4a6a6a] rounded-lg p-3 bg-[#0f2a2a]">
+              <div
+                className="border border-[#4a6a6a] rounded-lg p-3 bg-[#0f2a2a]"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
                 <Calendar
                   mode="single"
                   selected={dueDate}
