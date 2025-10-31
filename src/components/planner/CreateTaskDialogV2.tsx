@@ -87,7 +87,7 @@ export function CreateTaskDialogV2({
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <ResizableDialogContent className="py-6 max-h-[85vh] overflow-y-auto">
+      <ResizableDialogContent className="overflow-y-auto">
         <DialogClose onClick={handleClose} />
         <DialogHeader>
           <DialogTitle>Create New Task</DialogTitle>

@@ -114,7 +114,7 @@ const ResizableDialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative w-full max-w-lg max-h-[75vh] overflow-y-auto rounded-lg border-2 border-border bg-card text-card-foreground shadow-2xl p-6',
+      'relative w-full max-w-lg max-h-[60vh] overflow-y-auto rounded-lg border-2 border-border bg-card text-card-foreground shadow-2xl p-6',
       className
     )}
     {...props}

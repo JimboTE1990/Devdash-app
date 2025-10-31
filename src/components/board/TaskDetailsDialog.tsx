@@ -152,7 +152,7 @@ export function TaskDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <ResizableDialogContent className="px-6 py-6 overflow-y-auto">
+      <ResizableDialogContent className="overflow-y-auto">
         <DialogClose onClick={onClose} />
         <DialogHeader>
           <div className="flex items-center justify-between gap-2">
