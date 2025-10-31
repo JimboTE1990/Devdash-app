@@ -17,7 +17,7 @@ const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange(false)}
       />
-      <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 flex items-start justify-center py-[12.5vh] px-4 pointer-events-none overflow-y-auto">
         <div className="pointer-events-auto relative z-50">{children}</div>
       </div>
     </div>
@@ -114,7 +114,7 @@ const ResizableDialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative w-full max-w-2xl h-[75vh] overflow-y-auto rounded-lg border-2 border-border bg-card text-card-foreground shadow-2xl p-6',
+      'relative w-full max-w-2xl max-h-[75vh] overflow-y-auto rounded-lg border-2 border-border bg-card text-card-foreground shadow-2xl p-6',
       className
     )}
     {...props}
