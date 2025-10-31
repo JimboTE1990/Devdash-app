@@ -17,8 +17,8 @@ const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
         className="fixed inset-0 bg-black/50"
         onClick={() => onOpenChange(false)}
       />
-      <div className="fixed inset-0 flex items-start justify-center py-[12.5vh] px-4 pointer-events-none overflow-y-auto">
-        <div className="pointer-events-auto relative z-50">{children}</div>
+      <div className="fixed inset-0 flex items-center justify-center py-[12.5vh] px-4 pointer-events-none overflow-y-auto">
+        <div className="pointer-events-auto relative z-50 my-auto">{children}</div>
       </div>
     </div>
   )
