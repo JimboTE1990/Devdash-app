@@ -32,11 +32,13 @@ interface WeekCalendarProps {
   onCreateEvent: () => void
   onEventUpdate: (eventId: string, newDate: Date, newStartTime?: string) => void
   onEventDelete: (eventId: string) => void
+  onEventEdit?: (event: Event) => void
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
+const HOUR_HEIGHT = 80 // Increased from 60 for better readability
 
-export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate, onEventDelete }: WeekCalendarProps) {
+export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate, onEventDelete, onEventEdit }: WeekCalendarProps) {
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const [draggedEvent, setDraggedEvent] = useState<Event | null>(null)
 
@@ -120,20 +122,20 @@ export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate
   }
 
   const getEventPosition = (startTime?: string) => {
-    if (!startTime) return { top: 0, height: 60 }
+    if (!startTime) return { top: 0, height: HOUR_HEIGHT }
     const [hours, minutes] = startTime.split(':').map(Number)
     const totalMinutes = hours * 60 + minutes
-    const top = (totalMinutes / 60) * 60 // 60px per hour
-    return { top, height: 60 }
+    const top = (totalMinutes / 60) * HOUR_HEIGHT
+    return { top, height: HOUR_HEIGHT }
   }
 
   const getEventDuration = (startTime?: string, endTime?: string) => {
-    if (!startTime || !endTime) return 60
+    if (!startTime || !endTime) return HOUR_HEIGHT
     const [startHours, startMinutes] = startTime.split(':').map(Number)
     const [endHours, endMinutes] = endTime.split(':').map(Number)
     const startTotal = startHours * 60 + startMinutes
     const endTotal = endHours * 60 + endMinutes
-    return ((endTotal - startTotal) / 60) * 60 // Convert to pixels
+    return ((endTotal - startTotal) / 60) * HOUR_HEIGHT // Convert to pixels
   }
 
   const isToday = (date: Date) => isSameDay(date, new Date())
@@ -202,7 +204,8 @@ export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate
               {HOURS.map(hour => (
                 <div
                   key={hour}
-                  className="h-[60px] border-b border-border flex items-start justify-center pt-1"
+                  style={{ height: `${HOUR_HEIGHT}px` }}
+                  className="border-b border-border flex items-start justify-center pt-1"
                 >
                   <span className="text-xs text-muted-foreground">
                     {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
@@ -239,7 +242,8 @@ export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate
                       {HOURS.map(hour => (
                         <div
                           key={hour}
-                          className="h-[60px] border-b border-border hover:bg-secondary/30 cursor-pointer transition-colors"
+                          style={{ height: `${HOUR_HEIGHT}px` }}
+                          className="border-b border-border hover:bg-secondary/30 cursor-pointer transition-colors"
                           onClick={() => onDateClick(day)}
                           onDragOver={handleDragOver}
                           onDrop={() => handleDrop(day, hour)}
@@ -260,7 +264,7 @@ export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate
                               key={event.id}
                               draggable
                               onDragStart={() => handleDragStart(event)}
-                              className="absolute border-l-3 rounded-lg p-1.5 pointer-events-auto cursor-move hover:opacity-90 transition-all overflow-hidden shadow-sm group"
+                              className="absolute border-l-3 rounded-lg p-2 pointer-events-auto cursor-move hover:opacity-90 transition-all overflow-hidden shadow-sm group"
                               style={{
                                 top: `${position.top}px`,
                                 height: `${height}px`,
@@ -272,7 +276,11 @@ export function WeekCalendar({ events, onDateClick, onCreateEvent, onEventUpdate
                               }}
                               onClick={(e) => {
                                 e.stopPropagation()
-                                onDateClick(day)
+                                if (onEventEdit) {
+                                  onEventEdit(event)
+                                } else {
+                                  onDateClick(day)
+                                }
                               }}
                             >
                               <div className="flex items-start justify-between gap-1">

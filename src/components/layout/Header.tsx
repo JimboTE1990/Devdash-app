@@ -151,8 +151,8 @@ export default function Header() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <div className="px-4 py-2 text-sm">
-                      <p className="font-medium">{user.firstName} {user.lastName}</p>
-                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                      <p className="font-medium text-foreground">{user.firstName} {user.lastName}</p>
+                      <p className="text-xs text-foreground/70">{user.email}</p>
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => router.push('/profile')}>

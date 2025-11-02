@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
-import { User, CreditCard, Lock, Calendar, Mail, Crown, Sparkles } from 'lucide-react'
+import { User, CreditCard, Lock, Calendar, Mail, Crown, Sparkles, Eye, EyeOff } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user, loading, updateProfile, updatePassword, isTrialActive } = useAuth()
@@ -24,6 +24,8 @@ export default function ProfilePage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loadingUpdate, setLoadingUpdate] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
@@ -226,14 +228,14 @@ export default function ProfilePage() {
           </motion.div>
 
           {error && (
-            <motion.div {...fadeInUp} className="p-4 bg-red-900/20 border border-red-500/50 rounded-lg">
-              <p className="text-sm text-red-300">{error}</p>
+            <motion.div {...fadeInUp} className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-500/50 rounded-lg">
+              <p className="text-sm text-red-700 dark:text-red-300 font-medium">{error}</p>
             </motion.div>
           )}
 
           {success && (
-            <motion.div {...fadeInUp} className="p-4 bg-green-900/20 border border-green-500/50 rounded-lg">
-              <p className="text-sm text-green-300">{success}</p>
+            <motion.div {...fadeInUp} className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-500/50 rounded-lg">
+              <p className="text-sm text-green-700 dark:text-green-300 font-medium">{success}</p>
             </motion.div>
           )}
 
@@ -304,7 +306,7 @@ export default function ProfilePage() {
                   <div className="p-4 rounded-lg bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/20">
                     <div className="flex items-start gap-3">
                       <Crown className="h-5 w-5 text-amber-500 mt-0.5" />
-                      <div>
+                      <div className="flex-1">
                         <Label className="text-foreground font-semibold">Premium Subscription</Label>
                         <p className="text-foreground/80 mt-1">
                           Active since {formatDate(user.subscriptionStartDate)}
@@ -312,6 +314,17 @@ export default function ProfilePage() {
                         <p className="text-sm text-foreground/70 mt-1">
                           £24.99/month • Renews monthly
                         </p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            // Open Stripe Customer Portal
+                            window.open('https://billing.stripe.com/p/login/test_3cs9Bk7xc7xc7xc', '_blank')
+                          }}
+                          className="mt-3"
+                        >
+                          Manage Subscription
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -409,23 +422,43 @@ export default function ProfilePage() {
                 <form onSubmit={handleChangePassword} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="newPassword">New Password</Label>
-                    <Input
-                      id="newPassword"
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="newPassword"
+                        type={showNewPassword ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
                   <Button
                     type="submit"

@@ -139,39 +139,50 @@ export function CreateTaskDialogV2({
             {showCalendar && (
               <div
                 className="border border-[#4a6a6a] rounded-lg p-3 bg-[#0f2a2a]"
-                onClick={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation()
+                }}
               >
-                <Calendar
-                  mode="single"
-                  selected={dueDate}
-                  onSelect={(date) => {
-                    setDueDate(date)
-                    setShowCalendar(false)
-                  }}
-                  className="rounded-md bg-[#0f2a2a] text-white border-none"
-                  classNames={{
-                    months: "text-white",
-                    month: "text-white",
-                    caption: "text-white",
-                    caption_label: "text-white font-semibold",
-                    nav: "text-white",
-                    nav_button: "text-white hover:bg-[#2a4a4a] border-[#4a6a6a]",
-                    nav_button_previous: "text-white hover:bg-[#2a4a4a]",
-                    nav_button_next: "text-white hover:bg-[#2a4a4a]",
-                    table: "text-white",
-                    head_row: "text-gray-400",
-                    head_cell: "text-gray-400 font-medium",
-                    row: "text-white",
-                    cell: "text-white hover:bg-[#2a4a4a] rounded-md",
-                    day: "text-white hover:bg-[#2a4a4a] hover:text-white rounded-md",
-                    day_selected: "bg-[#7dd87d] text-[#0f2a2a] hover:bg-[#6cc76c] hover:text-[#0f2a2a] font-bold",
-                    day_today: "bg-[#2a4a4a] text-white font-semibold",
-                    day_outside: "text-gray-600",
-                    day_disabled: "text-gray-700",
-                    day_hidden: "invisible",
-                  }}
-                />
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Calendar
+                    mode="single"
+                    selected={dueDate}
+                    onSelect={(date) => {
+                      setDueDate(date)
+                      setShowCalendar(false)
+                    }}
+                    className="rounded-md bg-[#0f2a2a] text-white border-none"
+                    classNames={{
+                      months: "text-white",
+                      month: "text-white",
+                      caption: "text-white",
+                      caption_label: "text-white font-semibold",
+                      nav: "text-white",
+                      nav_button: "text-white hover:bg-[#2a4a4a] border-[#4a6a6a]",
+                      nav_button_previous: "text-white hover:bg-[#2a4a4a]",
+                      nav_button_next: "text-white hover:bg-[#2a4a4a]",
+                      table: "text-white",
+                      head_row: "text-gray-400",
+                      head_cell: "text-gray-400 font-medium",
+                      row: "text-white",
+                      cell: "text-white hover:bg-[#2a4a4a] rounded-md",
+                      day: "text-white hover:bg-[#2a4a4a] hover:text-white rounded-md",
+                      day_selected: "bg-[#7dd87d] text-[#0f2a2a] hover:bg-[#6cc76c] hover:text-[#0f2a2a] font-bold",
+                      day_today: "bg-[#2a4a4a] text-white font-semibold",
+                      day_outside: "text-gray-600",
+                      day_disabled: "text-gray-700",
+                      day_hidden: "invisible",
+                    }}
+                  />
+                </div>
               </div>
             )}
           </div>

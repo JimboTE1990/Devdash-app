@@ -69,7 +69,7 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       data-dropdown-menu
       className={cn(
-        'absolute right-0 mt-2 w-56 origin-top-right rounded-md border border-[#4a6a6a] bg-[#2d4a4a] py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50',
+        'absolute right-0 mt-2 w-56 origin-top-right rounded-md border border-border bg-card py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50',
         className
       )}
       {...props}
@@ -90,7 +90,7 @@ const DropdownMenuItem = React.forwardRef<
     <button
       ref={ref}
       className={cn(
-        'w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-[#3a5a5a] focus:bg-[#3a5a5a] focus:outline-none',
+        'w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent focus:bg-accent focus:outline-none',
         className
       )}
       onClick={(e) => {
@@ -111,7 +111,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('my-1 h-px bg-[#4a6a6a]', className)}
+    className={cn('my-1 h-px bg-border', className)}
     {...props}
   />
 ))
@@ -123,7 +123,7 @@ const DropdownMenuLabel = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('px-4 py-2 text-sm font-semibold text-gray-300', className)}
+    className={cn('px-4 py-2 text-sm font-semibold text-foreground', className)}
     {...props}
   >
     {children}

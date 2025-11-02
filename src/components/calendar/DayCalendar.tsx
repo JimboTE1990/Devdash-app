@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   addDays,
@@ -34,8 +34,16 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i)
 export function DayCalendar({ events, onDateClick, onCreateEvent, onEventUpdate, onEventDelete }: DayCalendarProps) {
   const [currentDay, setCurrentDay] = useState(new Date())
   const [draggedEvent, setDraggedEvent] = useState<Event | null>(null)
+  const [showBusinessHoursOnly, setShowBusinessHoursOnly] = useState(false)
+  const businessHoursStart = 8  // 8 AM
+  const businessHoursEnd = 19   // 7 PM
 
   const dayEvents = events.filter(event => isSameDay(new Date(event.date), currentDay))
+
+  // Filter hours based on business hours setting
+  const displayedHours = showBusinessHoursOnly
+    ? HOURS.filter(hour => hour >= businessHoursStart && hour <= businessHoursEnd)
+    : HOURS
 
   // Check if two events overlap
   const eventsOverlap = (event1: Event, event2: Event) => {
@@ -108,7 +116,9 @@ export function DayCalendar({ events, onDateClick, onCreateEvent, onEventUpdate,
     if (!startTime) return { top: 0, height: 80 }
     const [hours, minutes] = startTime.split(':').map(Number)
     const totalMinutes = hours * 60 + minutes
-    const top = (totalMinutes / 60) * 80 // 80px per hour for better visibility
+    // Adjust for business hours offset
+    const offset = showBusinessHoursOnly ? businessHoursStart * 80 : 0
+    const top = (totalMinutes / 60) * 80 - offset // 80px per hour for better visibility
     return { top, height: 80 }
   }
 
@@ -171,10 +181,20 @@ export function DayCalendar({ events, onDateClick, onCreateEvent, onEventUpdate,
             </Button>
           </div>
         </div>
-        <Button onClick={onCreateEvent}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Event
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant={showBusinessHoursOnly ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowBusinessHoursOnly(!showBusinessHoursOnly)}
+          >
+            <Clock className="h-4 w-4 mr-2" />
+            {showBusinessHoursOnly ? 'All Hours' : 'Business Hours'}
+          </Button>
+          <Button onClick={onCreateEvent}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Event
+          </Button>
+        </div>
       </div>
 
       {/* Calendar Grid */}
@@ -182,7 +202,7 @@ export function DayCalendar({ events, onDateClick, onCreateEvent, onEventUpdate,
         <div className="flex">
           {/* Time column */}
           <div className="w-20 border-r border-border bg-secondary/30 sticky left-0 z-10">
-            {HOURS.map(hour => (
+            {displayedHours.map(hour => (
               <div
                 key={hour}
                 className="h-20 border-b border-border flex items-start justify-center pt-2"
@@ -196,7 +216,7 @@ export function DayCalendar({ events, onDateClick, onCreateEvent, onEventUpdate,
 
           {/* Day column */}
           <div className="flex-1 relative">
-            {HOURS.map(hour => (
+            {displayedHours.map(hour => (
               <div
                 key={hour}
                 className="h-20 border-b border-border hover:bg-secondary/30 cursor-pointer transition-colors"

@@ -279,12 +279,12 @@ export function PlannerV2Board({ tasks, onUpdateTasks, userId }: PlannerV2BoardP
           variant={showArchived ? "default" : "outline"}
           size="sm"
           onClick={() => setShowArchived(!showArchived)}
-          className={`flex items-center gap-2 ${showArchived ? 'bg-primary text-primary-foreground' : ''} ${archivedCount > 0 ? 'animate-pulse' : ''}`}
+          className={`flex items-center gap-2 ${showArchived ? 'bg-primary text-primary-foreground' : ''}`}
         >
           {showArchived ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           <span className="font-semibold">{showArchived ? 'Hide' : 'Show'} Archived</span>
           {archivedCount > 0 && (
-            <span className={`px-2 py-0.5 ${showArchived ? 'bg-primary-foreground/20' : 'bg-primary'} text-xs font-bold rounded-full`}>
+            <span className={`px-2 py-0.5 ${showArchived ? 'bg-primary-foreground/20' : 'bg-primary'} text-xs font-bold rounded-full text-primary-foreground`}>
               {archivedCount}
             </span>
           )}

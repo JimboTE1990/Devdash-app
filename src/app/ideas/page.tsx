@@ -379,6 +379,10 @@ export default function IdeasPage() {
     setCollaboratorEmail('')
     setCollaboratorName('')
     setShowCollaboratorDialog(false)
+
+    // Show notification that sharing is UI-only
+    setNotification(`✉️ Collaborator added to board. Note: Email invitations are not sent in this demo version.`)
+    setTimeout(() => setNotification(null), 5000)
   }
 
   const handleAddComment = () => {
@@ -615,9 +619,9 @@ export default function IdeasPage() {
                       {/* Favorite Button */}
                       <button
                         onClick={(e) => handleToggleFavorite(board.id, e)}
-                        className="absolute top-2 right-2 p-2 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all hover:scale-110"
+                        className="absolute top-2 right-2 p-2 rounded-full bg-card/90 hover:bg-card shadow-sm transition-all hover:scale-110"
                       >
-                        <Heart className={`h-5 w-5 ${board.isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                        <Heart className={`h-5 w-5 ${board.isFavorite ? 'fill-red-500 text-red-500' : 'text-foreground/60'}`} />
                       </button>
                     </div>
 
@@ -920,7 +924,7 @@ export default function IdeasPage() {
                         className="text-sm font-semibold h-7 px-2 py-1"
                       />
                     ) : (
-                      <h3 className="font-semibold text-sm text-foreground flex-1">{section.name}</h3>
+                      <h3 className="font-semibold text-sm text-gray-800 flex-1">{section.name}</h3>
                     )}
                     <div className="flex items-center gap-1">
                       <div className="relative">
@@ -1002,7 +1006,7 @@ export default function IdeasPage() {
                     e.stopPropagation()
                     handleEditNote(note)
                   }}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-gray-600 hover:text-primary transition-colors"
                 >
                   <Edit2 className="h-3 w-3" />
                 </button>
@@ -1011,12 +1015,12 @@ export default function IdeasPage() {
                     e.stopPropagation()
                     handleDeleteNote(note.id)
                   }}
-                  className="text-muted-foreground hover:text-destructive transition-colors"
+                  className="text-gray-600 hover:text-destructive transition-colors"
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>
               </div>
-              <p className="text-sm text-foreground whitespace-pre-wrap break-words">
+              <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
                 {note.content}
               </p>
             </div>

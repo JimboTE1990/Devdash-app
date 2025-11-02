@@ -296,9 +296,11 @@ export default function FinancePage() {
     return true
   }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-  // Separate income and expenses with sorting
+  // Separate income and expenses with sorting - respecting tabView
   const incomeTransactions = transactions
     .filter(t => {
+      // Apply tab view filter - if viewing expenses only, hide income
+      if (tabView === 'expenses') return false
       if (filterMonth !== 'all' && t.month !== filterMonth) return false
       if (filterCategory !== 'all' && t.category !== filterCategory) return false
       return t.type === 'income'
@@ -307,6 +309,8 @@ export default function FinancePage() {
 
   const expenseTransactions = transactions
     .filter(t => {
+      // Apply tab view filter - if viewing income only, hide expenses
+      if (tabView === 'income') return false
       if (filterMonth !== 'all' && t.month !== filterMonth) return false
       if (filterCategory !== 'all' && t.category !== filterCategory) return false
       return t.type === 'expense'
@@ -541,8 +545,9 @@ export default function FinancePage() {
 
         {/* Transactions View */}
         {viewMode === 'yearly' ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className={`grid grid-cols-1 ${tabView === 'combined' ? 'lg:grid-cols-2' : ''} gap-6`}>
             {/* Income Table */}
+            {(tabView === 'combined' || tabView === 'income') && (
             <div className="bg-card rounded-xl border border-green-600/30 shadow-lg overflow-hidden">
               <div className="bg-green-50 border-b border-green-200 px-6 py-4">
                 <h3 className="text-lg font-semibold text-green-700">Income</h3>
@@ -618,8 +623,10 @@ export default function FinancePage() {
                 </table>
               </div>
             </div>
+            )}
 
             {/* Expense Table */}
+            {(tabView === 'combined' || tabView === 'expenses') && (
             <div className="bg-card rounded-xl border border-red-600/30 shadow-lg overflow-hidden">
               <div className="bg-red-50 border-b border-red-200 px-6 py-4">
                 <h3 className="text-lg font-semibold text-red-700">Expenses</h3>
@@ -695,6 +702,7 @@ export default function FinancePage() {
                 </table>
               </div>
             </div>
+            )}
           </div>
         ) : (
           <div className="space-y-6">

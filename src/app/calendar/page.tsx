@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Label } from '@/components/ui/label'
 import { Plus, Trash2, Edit, Calendar as CalendarIcon } from 'lucide-react'
 import { format } from 'date-fns'
+import { Calendar } from '@/components/ui/calendar'
 
 interface Event {
   id: string
@@ -38,6 +39,8 @@ export default function CalendarPage() {
   const [eventEndTime, setEventEndTime] = useState('')
   const [eventColor, setEventColor] = useState('#8b5cf6')
   const [viewMode, setViewMode] = useState<'day' | 'week' | 'week-overview' | 'month'>('week-overview')
+  const [validationError, setValidationError] = useState('')
+  const [showDatePicker, setShowDatePicker] = useState(false)
 
   const colorOptions = [
     { name: 'Purple', value: '#8b5cf6' },
@@ -78,6 +81,7 @@ export default function CalendarPage() {
     setEventStartTime('')
     setEventEndTime('')
     setEventColor('#8b5cf6')
+    setValidationError('')
     setShowEventDialog(true)
   }
 
@@ -88,11 +92,23 @@ export default function CalendarPage() {
     setEventStartTime(event.startTime || '')
     setEventEndTime(event.endTime || '')
     setEventColor(event.color || '#8b5cf6')
+    setSelectedDate(event.date)
+    setValidationError('')
     setShowEventDialog(true)
   }
 
   const handleSaveEvent = () => {
-    if (!eventTitle.trim()) return
+    // Validation
+    if (!eventTitle.trim()) {
+      setValidationError('Event title is required')
+      return
+    }
+    if (!eventStartTime.trim()) {
+      setValidationError('Start time is required')
+      return
+    }
+
+    setValidationError('')
 
     if (editingEvent) {
       const updatedEvents = events.map(e =>
@@ -234,6 +250,7 @@ export default function CalendarPage() {
             onCreateEvent={handleCreateEvent}
             onEventUpdate={handleEventUpdate}
             onEventDelete={handleDeleteEvent}
+            onEventEdit={handleEditEvent}
           />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -318,8 +335,13 @@ export default function CalendarPage() {
             <DialogTitle>{editingEvent ? 'Edit Event' : 'New Event'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {validationError && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-500/50 rounded-lg">
+                <p className="text-sm text-red-700 dark:text-red-300 font-medium">{validationError}</p>
+              </div>
+            )}
             <div className="space-y-2">
-              <Label>Event Title</Label>
+              <Label>Event Title <span className="text-red-500">*</span></Label>
               <Input
                 value={eventTitle}
                 onChange={(e) => setEventTitle(e.target.value)}
@@ -335,9 +357,33 @@ export default function CalendarPage() {
                 rows={3}
               />
             </div>
+            <div className="space-y-2">
+              <Label>Date</Label>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                className="w-full justify-start text-left font-normal"
+              >
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                {format(selectedDate, 'MMMM d, yyyy')}
+              </Button>
+              {showDatePicker && (
+                <div className="border border-border rounded-lg p-3 bg-card">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => {
+                      if (date) setSelectedDate(date)
+                      setShowDatePicker(false)
+                    }}
+                  />
+                </div>
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Start Time</Label>
+                <Label>Start Time <span className="text-red-500">*</span></Label>
                 <div className="flex gap-2">
                   <select
                     value={eventStartTime.split(':')[0] || '09'}
