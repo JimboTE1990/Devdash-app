@@ -386,13 +386,14 @@ export default function CalendarPage() {
                 <Label>Start Time <span className="text-red-500">*</span></Label>
                 <div className="flex gap-2">
                   <select
-                    value={eventStartTime.split(':')[0] || '09'}
+                    value={eventStartTime.split(':')[0] || ''}
                     onChange={(e) => {
                       const minutes = eventStartTime.split(':')[1] || '00'
                       setEventStartTime(`${e.target.value}:${minutes}`)
                     }}
                     className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   >
+                    <option value="">--</option>
                     {Array.from({ length: 24 }, (_, i) => {
                       const hour = i.toString().padStart(2, '0')
                       const display = i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`
@@ -400,13 +401,17 @@ export default function CalendarPage() {
                     })}
                   </select>
                   <select
-                    value={eventStartTime.split(':')[1] || '00'}
+                    value={eventStartTime.split(':')[1] || ''}
                     onChange={(e) => {
-                      const hours = eventStartTime.split(':')[0] || '09'
-                      setEventStartTime(`${hours}:${e.target.value}`)
+                      const hours = eventStartTime.split(':')[0] || ''
+                      if (hours) {
+                        setEventStartTime(`${hours}:${e.target.value}`)
+                      }
                     }}
                     className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={!eventStartTime.split(':')[0]}
                   >
+                    <option value="">--</option>
                     {Array.from({ length: 12 }, (_, i) => {
                       const minute = (i * 5).toString().padStart(2, '0')
                       return <option key={minute} value={minute}>{minute}</option>
@@ -418,13 +423,14 @@ export default function CalendarPage() {
                 <Label>End Time</Label>
                 <div className="flex gap-2">
                   <select
-                    value={eventEndTime.split(':')[0] || '10'}
+                    value={eventEndTime.split(':')[0] || ''}
                     onChange={(e) => {
                       const minutes = eventEndTime.split(':')[1] || '00'
                       setEventEndTime(`${e.target.value}:${minutes}`)
                     }}
                     className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   >
+                    <option value="">--</option>
                     {Array.from({ length: 24 }, (_, i) => {
                       const hour = i.toString().padStart(2, '0')
                       const display = i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`
@@ -432,13 +438,17 @@ export default function CalendarPage() {
                     })}
                   </select>
                   <select
-                    value={eventEndTime.split(':')[1] || '00'}
+                    value={eventEndTime.split(':')[1] || ''}
                     onChange={(e) => {
-                      const hours = eventEndTime.split(':')[0] || '10'
-                      setEventEndTime(`${hours}:${e.target.value}`)
+                      const hours = eventEndTime.split(':')[0] || ''
+                      if (hours) {
+                        setEventEndTime(`${hours}:${e.target.value}`)
+                      }
                     }}
                     className="flex-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={!eventEndTime.split(':')[0]}
                   >
+                    <option value="">--</option>
                     {Array.from({ length: 12 }, (_, i) => {
                       const minute = (i * 5).toString().padStart(2, '0')
                       return <option key={minute} value={minute}>{minute}</option>

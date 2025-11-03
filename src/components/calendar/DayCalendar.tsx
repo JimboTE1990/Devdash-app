@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Clock } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Plus, Clock, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   addDays,
@@ -35,8 +35,35 @@ export function DayCalendar({ events, onDateClick, onCreateEvent, onEventUpdate,
   const [currentDay, setCurrentDay] = useState(new Date())
   const [draggedEvent, setDraggedEvent] = useState<Event | null>(null)
   const [showBusinessHoursOnly, setShowBusinessHoursOnly] = useState(false)
-  const businessHoursStart = 8  // 8 AM
-  const businessHoursEnd = 19   // 7 PM
+  const [showSettings, setShowSettings] = useState(false)
+  const [businessHoursStart, setBusinessHoursStart] = useState(8)  // 8 AM
+  const [businessHoursEnd, setBusinessHoursEnd] = useState(19)   // 7 PM
+  const [tempStart, setTempStart] = useState(8)
+  const [tempEnd, setTempEnd] = useState(19)
+
+  // Load working hours from localStorage on mount
+  useEffect(() => {
+    const savedStart = localStorage.getItem('workingHoursStart')
+    const savedEnd = localStorage.getItem('workingHoursEnd')
+    if (savedStart) {
+      const start = parseInt(savedStart)
+      setBusinessHoursStart(start)
+      setTempStart(start)
+    }
+    if (savedEnd) {
+      const end = parseInt(savedEnd)
+      setBusinessHoursEnd(end)
+      setTempEnd(end)
+    }
+  }, [])
+
+  const handleApplySettings = () => {
+    setBusinessHoursStart(tempStart)
+    setBusinessHoursEnd(tempEnd)
+    localStorage.setItem('workingHoursStart', tempStart.toString())
+    localStorage.setItem('workingHoursEnd', tempEnd.toString())
+    setShowSettings(false)
+  }
 
   const dayEvents = events.filter(event => isSameDay(new Date(event.date), currentDay))
 
@@ -182,18 +209,72 @@ export function DayCalendar({ events, onDateClick, onCreateEvent, onEventUpdate,
           </div>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant={showBusinessHoursOnly ? "default" : "outline"}
-            size="sm"
-            onClick={() => setShowBusinessHoursOnly(!showBusinessHoursOnly)}
-          >
-            <Clock className="h-4 w-4 mr-2" />
-            {showBusinessHoursOnly ? 'All Hours' : 'Business Hours'}
-          </Button>
-          <Button onClick={onCreateEvent}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Event
-          </Button>
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <Button
+                variant={showBusinessHoursOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowBusinessHoursOnly(!showBusinessHoursOnly)}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                {showBusinessHoursOnly ? 'All Hours' : 'Business Hours'}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSettings(!showSettings)}
+                title="Configure working hours"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button onClick={onCreateEvent}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Event
+              </Button>
+            </div>
+            {showSettings && (
+              <div className="bg-card border border-border rounded-lg p-4 shadow-lg">
+                <h4 className="text-sm font-semibold mb-3 text-foreground">Working Hours</h4>
+                <div className="flex gap-3 items-center">
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Start</label>
+                    <select
+                      value={tempStart}
+                      onChange={(e) => setTempStart(parseInt(e.target.value))}
+                      className="w-full px-2 py-1 text-sm bg-background border border-input rounded-md text-foreground"
+                    >
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">End</label>
+                    <select
+                      value={tempEnd}
+                      onChange={(e) => setTempEnd(parseInt(e.target.value))}
+                      className="w-full px-2 py-1 text-sm bg-background border border-input rounded-md text-foreground"
+                    >
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i === 0 ? '12 AM' : i < 12 ? `${i} AM` : i === 12 ? '12 PM' : `${i - 12} PM`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleApplySettings}
+                    className="mt-5"
+                  >
+                    Apply
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

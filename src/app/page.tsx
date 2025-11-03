@@ -297,8 +297,7 @@ export default function LandingPage() {
                     {[
                       { title: 'Flexible Planning View', desc: 'Organize tasks across any timeframe with clear visibility and drag-and-drop simplicity' },
                       { title: 'Custom Swimlanes', desc: 'Create priority levels, team lanes, or project phases - organize your way' },
-                      { title: 'Subtasks & Dependencies', desc: 'Break down complex tasks with nested subtasks and track blockers' },
-                      { title: 'Version History', desc: 'Travel back in time and restore previous versions of your planner' }
+                      { title: 'Subtasks & Dependencies', desc: 'Break down complex tasks with nested subtasks and track blockers' }
                     ].map((feature, i) => (
                       <motion.div
                         key={i}
