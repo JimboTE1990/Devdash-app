@@ -270,6 +270,7 @@ export default function CalendarPage() {
                       handleCreateEvent()
                     }
                   }}
+                  onEventEdit={handleEditEvent}
                 />
               </div>
             </div>

@@ -40,9 +40,10 @@ interface MonthCalendarProps {
   selectedDate: Date
   onSelectDate: (date: Date) => void
   onDateClick: (date: Date) => void
+  onEventEdit?: (event: Event) => void
 }
 
-export function MonthCalendar({ events, selectedDate, onSelectDate, onDateClick }: MonthCalendarProps) {
+export function MonthCalendar({ events, selectedDate, onSelectDate, onDateClick, onEventEdit }: MonthCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [hoverDate, setHoverDate] = useState<Date | null>(null)
   const [popoverPosition, setPopoverPosition] = useState({ x: 0, y: 0 })
@@ -226,10 +227,14 @@ export function MonthCalendar({ events, selectedDate, onSelectDate, onDateClick 
               {dayEvents.slice(0, 3).map(event => (
                 <div
                   key={event.id}
-                  className="border-l-3 px-2 py-1 text-xs truncate rounded-md hover:opacity-90 transition-all shadow-sm"
+                  className="border-l-3 px-2 py-1 text-xs truncate rounded-md hover:opacity-90 transition-all shadow-sm cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation()
-                    onSelectDate(currentDay)
+                    if (onEventEdit) {
+                      onEventEdit(event)
+                    } else {
+                      onSelectDate(currentDay)
+                    }
                   }}
                   style={{
                     borderLeftWidth: '3px',
@@ -311,7 +316,11 @@ export function MonthCalendar({ events, selectedDate, onSelectDate, onDateClick 
                   backgroundColor: `${event.color}10`
                 }}
                 onClick={() => {
-                  onSelectDate(hoverDate)
+                  if (onEventEdit) {
+                    onEventEdit(event)
+                  } else {
+                    onSelectDate(hoverDate)
+                  }
                   setHoverDate(null)
                 }}
               >

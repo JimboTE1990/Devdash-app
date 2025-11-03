@@ -709,7 +709,11 @@ export default function FinancePage() {
             {MONTHS.map(month => {
               // Get all transactions that should be included in this month
               const monthTransactions = transactions.filter(t => {
-                // Apply filters
+                // Apply tab view filter FIRST (Income/Expense/Combined buttons)
+                if (tabView === 'income' && t.type !== 'income') return false
+                if (tabView === 'expenses' && t.type !== 'expense') return false
+
+                // Apply other filters
                 if (filterType !== 'all' && t.type !== filterType) return false
                 if (filterMonth !== 'all' && t.month !== filterMonth) return false
                 if (filterCategory !== 'all' && t.category !== filterCategory) return false
