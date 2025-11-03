@@ -1,11 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FeatureCard } from '@/components/landing/FeatureCard'
 import { AnimatedNumber } from '@/components/landing/AnimatedNumber'
+import { supabase } from '@/lib/supabase/client'
 import {
   Lightbulb,
   KanbanSquare,
@@ -22,6 +25,27 @@ import {
 } from 'lucide-react'
 
 export default function LandingPage() {
+  const router = useRouter()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setIsAuthenticated(!!session)
+      setIsLoading(false)
+    }
+    checkAuth()
+  }, [])
+
+  const handleTrialClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isAuthenticated) {
+      router.push('/dashboard')
+    } else {
+      router.push('/auth')
+    }
+  }
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -89,14 +113,17 @@ export default function LandingPage() {
             transition={{ delay: 0.15, duration: 0.2 }}
             className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center px-4"
           >
-            <Link href="/auth" className="w-full sm:w-auto max-w-md sm:max-w-none">
-              <Button size="lg" className="w-full text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-4 sm:h-5 w-4 sm:w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              onClick={handleTrialClick}
+              disabled={isLoading}
+              className="w-full sm:w-auto max-w-md sm:max-w-none text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group"
+            >
+              {isLoading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Start Free Trial'}
+              <ArrowRight className="ml-2 h-4 sm:h-5 w-4 sm:w-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
             <Link href="/pricing" className="w-full sm:w-auto max-w-md sm:max-w-none">
-              <Button size="lg" variant="outline" className="w-full text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 border-2 hover:bg-primary/5 hover:border-primary hover:scale-105 transition-all duration-300">
+              <Button size="lg" variant="outline" className="w-full text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 border-2 hover:bg-primary/5 hover:border-primary hover:text-primary hover:scale-105 transition-all duration-300">
                 View Pricing
               </Button>
             </Link>
@@ -268,7 +295,7 @@ export default function LandingPage() {
 
                   <motion.div className="space-y-5 mb-8" {...staggerContainer}>
                     {[
-                      { title: 'Weekly Planning View', desc: 'Organize tasks by week with clear visibility across the entire month' },
+                      { title: 'Flexible Planning View', desc: 'Organize tasks across any timeframe with clear visibility and drag-and-drop simplicity' },
                       { title: 'Custom Swimlanes', desc: 'Create priority levels, team lanes, or project phases - organize your way' },
                       { title: 'Subtasks & Dependencies', desc: 'Break down complex tasks with nested subtasks and track blockers' },
                       { title: 'Version History', desc: 'Travel back in time and restore previous versions of your planner' }
@@ -572,14 +599,17 @@ export default function LandingPage() {
               className="flex flex-wrap gap-4 justify-center mb-8"
               {...staggerContainer}
             >
-              <Link href="/auth">
-                <Button size="lg" className="text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group">
-                  Start Free Trial
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                onClick={handleTrialClick}
+                disabled={isLoading}
+                className="text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group"
+              >
+                {isLoading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Start Free Trial'}
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
               <Link href="/pricing">
-                <Button size="lg" variant="outline" className="text-lg px-12 py-6 border-2 hover:bg-primary/5 hover:border-primary hover:scale-105 transition-all duration-300">
+                <Button size="lg" variant="outline" className="text-lg px-12 py-6 border-2 hover:bg-primary/5 hover:border-primary hover:text-primary hover:scale-105 transition-all duration-300">
                   See Pricing
                 </Button>
               </Link>
