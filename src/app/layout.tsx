@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import { ThemeProvider } from '@/context/ThemeContext'
+import { ToastProvider } from '@/components/ui/toast'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { VersionSwitcher } from '@/components/dev/VersionSwitcher'
@@ -43,16 +45,20 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <AuthProvider>
-          <ThemeProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <VersionSwitcher />
-            </div>
-          </ThemeProvider>
-        </AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            <ThemeProvider>
+              <ToastProvider>
+                <div className="min-h-screen flex flex-col">
+                  <Header />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                  <VersionSwitcher />
+                </div>
+              </ToastProvider>
+            </ThemeProvider>
+          </AuthProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

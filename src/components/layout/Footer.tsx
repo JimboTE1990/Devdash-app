@@ -79,7 +79,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="mailto:contact@jimbula.com"
+                  href="/contact"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Contact
