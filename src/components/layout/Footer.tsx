@@ -101,7 +101,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/privacy"
+                  href="/terms"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   Terms of Service
