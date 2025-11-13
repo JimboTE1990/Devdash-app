@@ -15,19 +15,25 @@ function ConfirmEmailContent() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        // Get the token from URL (Supabase automatically handles this)
+        // Get the token from URL - support both new and legacy formats
         const token_hash = searchParams.get('token_hash')
+        const token = searchParams.get('token') // Legacy format
         const type = searchParams.get('type')
 
-        if (!token_hash || type !== 'email') {
+        // Accept both 'email' and 'signup' types, and check for either token format
+        const validToken = token_hash || token
+        const validType = type === 'email' || type === 'signup' || type === 'magiclink'
+
+        if (!validToken || !validType) {
+          console.error('Invalid verification parameters:', { token_hash, token, type })
           setStatus('error')
-          setMessage('Invalid verification link')
+          setMessage('Invalid verification link. Please try requesting a new verification email.')
           return
         }
 
-        // Verify the email with Supabase
+        // Verify the email with Supabase using appropriate method
         const { data, error } = await supabase.auth.verifyOtp({
-          token_hash,
+          token_hash: validToken,
           type: 'email',
         })
 

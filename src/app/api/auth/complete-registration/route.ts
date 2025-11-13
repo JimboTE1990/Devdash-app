@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
           trial_start_date: now.toISOString(),
           trial_end_date: trialEndDate.toISOString(),
           trial_duration_days: trialDurationDays,
-          has_used_trial: true,
+          has_used_trial: false, // User hasn't used trial yet - they're starting it now
           updated_at: now.toISOString(),
         },
         {

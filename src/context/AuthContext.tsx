@@ -238,7 +238,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!user) return false
     if (user.plan === 'premium' || isLifetimeFree) return false
     if (!user.trialEndDate) return false
-    return new Date() >= user.trialEndDate
+
+    // Trial has expired if current time is AFTER trial end date (not equal to)
+    // Add 1 second buffer to avoid edge case timing issues
+    const now = new Date()
+    const trialEnd = new Date(user.trialEndDate)
+    return now.getTime() > trialEnd.getTime()
   }, [user, isLifetimeFree])
 
   const value = {
