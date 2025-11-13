@@ -94,10 +94,10 @@ export default function Error({
             <p className="text-xs text-center text-muted-foreground">
               If this problem persists, please contact{' '}
               <a
-                href="mailto:contact@jimbula.com"
+                href="mailto:contact@jimbula.co.uk"
                 className="text-primary hover:underline font-medium"
               >
-                contact@jimbula.com
+                contact@jimbula.co.uk
               </a>
             </p>
           </div>

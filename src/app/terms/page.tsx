@@ -367,7 +367,7 @@ export default function TermsPage() {
                   </p>
                   <div className="bg-muted/30 rounded-lg p-4 border border-border">
                     <p className="text-foreground/90">
-                      Email us at: <a href="mailto:contact@jimbula.com" className="text-primary hover:text-primary/80 font-semibold underline">contact@jimbula.com</a>
+                      Email us at: <a href="mailto:contact@jimbula.co.uk" className="text-primary hover:text-primary/80 font-semibold underline">contact@jimbula.co.uk</a>
                     </p>
                   </div>
                   <p className="text-sm text-muted-foreground">

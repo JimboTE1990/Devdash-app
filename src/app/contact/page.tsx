@@ -33,11 +33,11 @@ export default function ContactPage() {
               </div>
 
               <a
-                href="mailto:contact@jimbula.com"
+                href="mailto:contact@jimbula.co.uk"
                 className="group inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
               >
                 <Send className="h-5 w-5" />
-                <span className="text-lg">contact@jimbula.com</span>
+                <span className="text-lg">contact@jimbula.co.uk</span>
               </a>
 
               <div className="pt-8 border-t border-border w-full">
