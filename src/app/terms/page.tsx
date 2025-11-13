@@ -67,8 +67,8 @@ export default function TermsPage() {
                       {[
                         'You must be 18 or older to use Jimbula',
                         'You are responsible for keeping your account secure',
-                        'Be respectful and don't use our service for anything illegal',
-                        'We can update these terms, but we'll notify you of major changes',
+                        'Be respectful and don\'t use our service for anything illegal',
+                        'We can update these terms, but we\'ll notify you of major changes',
                         'You can cancel your subscription at any time'
                       ].map((item, i) => (
                         <motion.div
