@@ -6,6 +6,7 @@ import { MonthCalendar } from '@/components/calendar/MonthCalendar'
 import { WeekCalendar } from '@/components/calendar/WeekCalendar'
 import { WeekOverview } from '@/components/calendar/WeekOverview'
 import { DayCalendar } from '@/components/calendar/DayCalendar'
+import { UpgradePrompt } from '@/components/upgrade/UpgradePrompt'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -28,7 +29,7 @@ interface Event {
 }
 
 export default function CalendarPage() {
-  const { user } = useAuth()
+  const { user, requiresUpgrade } = useAuth()
   const [events, setEvents] = useState<Event[]>([])
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [showEventDialog, setShowEventDialog] = useState(false)
@@ -175,6 +176,11 @@ export default function CalendarPage() {
   )
 
   const datesWithEvents = events.map(e => e.date)
+
+  // Show upgrade prompt if trial expired
+  if (requiresUpgrade) {
+    return <UpgradePrompt mode="page" />
+  }
 
   return (
     <div className="min-h-screen bg-background">
