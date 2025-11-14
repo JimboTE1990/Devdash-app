@@ -22,6 +22,14 @@ export async function POST(req: NextRequest) {
     const lastName = authUser.user.user_metadata?.last_name || ''
     const trialDurationDays = authUser.user.user_metadata?.trial_duration_days || 7
 
+    // Log for debugging
+    console.log(`Creating profile for user ${userId}:`, {
+      firstName,
+      lastName,
+      email: authUser.user.email,
+      metadata: authUser.user.user_metadata
+    })
+
     // Calculate trial dates
     const now = new Date()
     const trialEndDate = new Date(now.getTime() + trialDurationDays * 24 * 60 * 60 * 1000)
