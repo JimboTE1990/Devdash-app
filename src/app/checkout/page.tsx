@@ -235,9 +235,7 @@ function CheckoutPageContent() {
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground mb-1">{currentPlan.name}</h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          {canUseTrial && selectedPlan === 'personal'
-                            ? '7-day free trial, then £' + currentPlan.price + '/month'
-                            : '£' + currentPlan.price + '/month'}
+                          7-day free trial, then {displayPrice}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           Billing Email: {user?.email}
@@ -277,9 +275,7 @@ function CheckoutPageContent() {
                     )}
                   </Button>
                   <p className="text-xs text-center text-muted-foreground">
-                    {canUseTrial && selectedPlan === 'personal'
-                      ? 'Start your 7-day free trial. No charge today.'
-                      : `You'll be charged £${currentPlan.price} today.`}
+                    Start your 7-day free trial. No charge today.
                   </p>
                 </form>
               </CardContent>
@@ -301,7 +297,7 @@ function CheckoutPageContent() {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold text-foreground mb-1">{currentPlan.name}</h3>
-                      <p className="text-sm text-muted-foreground">Monthly subscription</p>
+                      <p className="text-sm text-muted-foreground">{selectedBilling === 'annual' ? 'Annual' : 'Monthly'} subscription</p>
                     </div>
                   </div>
 
@@ -320,29 +316,23 @@ function CheckoutPageContent() {
                 {/* Pricing */}
                 <div className="pt-4 border-t border-border space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Monthly price</span>
-                    <span className="font-semibold text-foreground">£{currentPlan.price.toFixed(2)}</span>
+                    <span className="text-muted-foreground">{selectedBilling === 'annual' ? 'Annual' : 'Monthly'} price</span>
+                    <span className="font-semibold text-foreground">£{currentPrice.toFixed(2)}</span>
                   </div>
-                  {canUseTrial && selectedPlan === 'personal' && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">7-day free trial</span>
-                      <Badge variant="secondary" className="bg-primary/20 text-primary">
-                        -£{currentPlan.price.toFixed(2)}
-                      </Badge>
-                    </div>
-                  )}
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">7-day free trial</span>
+                    <Badge variant="secondary" className="bg-primary/20 text-primary">
+                      Included
+                    </Badge>
+                  </div>
                   <div className="pt-3 border-t border-border">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-foreground">Due today</span>
-                      <span className="text-2xl font-bold text-foreground">
-                        {canUseTrial && selectedPlan === 'personal' ? '£0.00' : `£${currentPlan.price.toFixed(2)}`}
-                      </span>
+                      <span className="text-2xl font-bold text-foreground">£0.00</span>
                     </div>
-                    {canUseTrial && selectedPlan === 'personal' && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        You'll be charged £{currentPlan.price.toFixed(2)} on {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                      </p>
-                    )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      You'll be charged £{currentPrice.toFixed(2)} on {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
 

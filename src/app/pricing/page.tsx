@@ -194,13 +194,13 @@ export default function PricingPage() {
 
                       <div className="text-xs sm:text-sm font-medium text-foreground text-center mb-3">Or subscribe now with +7 days free</div>
                       <div className="grid grid-cols-1 gap-2 sm:gap-3">
-                        <Link href="/checkout?plan=personal&billing=monthly" className="w-full">
+                        <Link href={user ? "/checkout?plan=personal&billing=monthly" : "/auth?redirect=/checkout?plan=personal&billing=monthly"} className="w-full">
                           <Button variant="outline" className="w-full border-2 border-primary/30 text-foreground hover:border-primary hover:bg-primary/5 h-auto py-2.5 sm:py-3 flex justify-between items-center transition-all hover:scale-105">
                             <span className="text-sm font-semibold">Monthly</span>
                             <span className="text-sm font-bold">£24.99/mo</span>
                           </Button>
                         </Link>
-                        <Link href="/checkout?plan=personal&billing=annual" className="w-full">
+                        <Link href={user ? "/checkout?plan=personal&billing=annual" : "/auth?redirect=/checkout?plan=personal&billing=annual"} className="w-full">
                           <Button variant="outline" className="w-full border-2 border-green-500 text-foreground hover:border-green-600 hover:bg-green-50 dark:hover:bg-green-950/20 h-auto py-2.5 sm:py-3 flex justify-between items-center transition-all hover:scale-105 relative">
                             <div className="absolute -top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded">Best Value</div>
                             <div className="flex flex-col items-start">
