@@ -133,16 +133,31 @@ export default function PricingPage() {
                 <CardHeader className="space-y-3">
                   <CardTitle className="text-xl sm:text-2xl">Personal Plan</CardTitle>
                   <CardDescription className="text-sm sm:text-base">For indie developers and business owners ready to elevate their planning and productivity</CardDescription>
-                  <div className="mt-3 sm:mt-4 space-y-1">
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg sm:text-xl text-muted-foreground line-through">£39.99</span>
-                      <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">Early Bird</span>
+                  <div className="mt-3 sm:mt-4 space-y-2">
+                    <p className="text-xs sm:text-sm font-semibold text-primary bg-primary/10 px-2 py-1 rounded inline-block">Start with 7 days free</p>
+                    <div className="space-y-2 pt-2">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-base sm:text-lg text-muted-foreground line-through">£39.99</span>
+                          <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">Early Bird</span>
+                        </div>
+                        <div>
+                          <span className="text-2xl sm:text-3xl font-bold text-foreground">£24.99</span>
+                          <span className="text-sm text-muted-foreground ml-1">/month</span>
+                        </div>
+                      </div>
+                      <div className="pt-2 pb-1 border-t border-border/50">
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <span className="text-xl sm:text-2xl font-bold text-foreground">£249.90</span>
+                          <span className="text-sm text-muted-foreground">/year</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded">Save £49.98</span>
+                          <span className="text-xs text-green-600 dark:text-green-400 font-medium">2 months free!</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-3xl sm:text-4xl font-bold text-foreground">£24.99</span>
-                      <span className="text-sm sm:text-base text-muted-foreground ml-2">per month</span>
-                    </div>
-                    <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">Limited time introductory offer</p>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 font-medium pt-1">Limited time introductory offer</p>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4 sm:space-y-6">
@@ -170,23 +185,34 @@ export default function PricingPage() {
 
                   <div className="space-y-4">
                     <div className="pt-2 border-t border-border">
-                      <div className="text-xs sm:text-sm font-medium text-foreground text-center mb-3 sm:mb-4">Choose your plan</div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                        <Link href="/auth" className="w-full">
-                          <Button className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold h-auto py-2.5 sm:py-3 flex flex-col items-center gap-0.5 sm:gap-1 shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                            <span className="text-sm">Free Trial</span>
-                            <span className="text-xs opacity-90">7 days free</span>
+                      <Link href="/auth" className="w-full block mb-4">
+                        <Button className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-semibold h-auto py-3 sm:py-4 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                          <span className="text-base sm:text-lg">Start Free 7-Day Trial</span>
+                        </Button>
+                      </Link>
+                      <p className="text-xs text-center text-muted-foreground mb-3">No credit card required</p>
+
+                      <div className="text-xs sm:text-sm font-medium text-foreground text-center mb-3">Or subscribe now with +7 days free</div>
+                      <div className="grid grid-cols-1 gap-2 sm:gap-3">
+                        <Link href="/checkout?plan=personal&billing=monthly" className="w-full">
+                          <Button variant="outline" className="w-full border-2 border-primary/30 text-foreground hover:border-primary hover:bg-primary/5 h-auto py-2.5 sm:py-3 flex justify-between items-center transition-all hover:scale-105">
+                            <span className="text-sm font-semibold">Monthly</span>
+                            <span className="text-sm font-bold">£24.99/mo</span>
                           </Button>
                         </Link>
-                        <Link href="/checkout?plan=personal" className="w-full">
-                          <Button variant="outline" className="w-full border-2 border-primary text-primary hover:bg-primary/10 h-auto py-2.5 sm:py-3 flex flex-col items-center gap-0.5 sm:gap-1 transition-all hover:scale-105">
-                            <span className="text-sm">Premium</span>
-                            <span className="text-xs opacity-90">£24.99/month</span>
+                        <Link href="/checkout?plan=personal&billing=annual" className="w-full">
+                          <Button variant="outline" className="w-full border-2 border-green-500 text-foreground hover:border-green-600 hover:bg-green-50 dark:hover:bg-green-950/20 h-auto py-2.5 sm:py-3 flex justify-between items-center transition-all hover:scale-105 relative">
+                            <div className="absolute -top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded">Best Value</div>
+                            <div className="flex flex-col items-start">
+                              <span className="text-sm font-semibold">Annual</span>
+                              <span className="text-xs text-green-600 dark:text-green-400">2 months free</span>
+                            </div>
+                            <span className="text-sm font-bold">£249.90/yr</span>
                           </Button>
                         </Link>
                       </div>
-                      <p className="text-xs text-muted-foreground text-center mt-2 sm:mt-3">
-                        Start with a free trial or go premium right away
+                      <p className="text-xs text-muted-foreground text-center mt-3">
+                        All paid plans include 7 extra days free
                       </p>
                     </div>
                   </div>
@@ -281,8 +307,16 @@ export default function PricingPage() {
             <motion.div {...staggerContainer} className="space-y-6">
               {[
                 {
-                  question: 'What happens after my trial ends?',
-                  answer: 'After your 7-day trial, you\'ll need to subscribe to the Premium plan (£24.99/month early bird special) to continue using Jimbula. You can cancel anytime during the trial without being charged.'
+                  question: 'How does the free trial work?',
+                  answer: 'Start your 7-day free trial with no credit card required. You\'ll get full access to all features. After 7 days, you can choose to subscribe to continue using Jimbula.'
+                },
+                {
+                  question: 'Do paid plans include a trial?',
+                  answer: 'Yes! When you subscribe to a monthly or annual plan, you get an additional 7 days free on top of your subscription. This means you can try Jimbula risk-free before your first payment.'
+                },
+                {
+                  question: 'How much do I save with the annual plan?',
+                  answer: 'The annual plan costs £249.90/year, which is 10 months at the early bird price of £24.99. That means you get 2 months completely free - saving £49.98 per year!'
                 },
                 {
                   question: 'Can I cancel my subscription?',

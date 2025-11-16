@@ -24,6 +24,7 @@ function CheckoutPageContent() {
 
   const [processing, setProcessing] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<'personal' | 'enterprise'>('personal')
+  const [selectedBilling, setSelectedBilling] = useState<'monthly' | 'annual'>('monthly')
 
   // Redirect if not logged in
   useEffect(() => {
@@ -32,11 +33,17 @@ function CheckoutPageContent() {
     }
   }, [user, loading, router])
 
-  // Set plan from URL
+  // Set plan and billing from URL
   useEffect(() => {
     const planParam = searchParams.get('plan')
+    const billingParam = searchParams.get('billing')
+
     if (planParam === 'enterprise' || planParam === 'personal') {
       setSelectedPlan(planParam)
+    }
+
+    if (billingParam === 'annual' || billingParam === 'monthly') {
+      setSelectedBilling(billingParam)
     }
   }, [searchParams])
 
@@ -45,8 +52,10 @@ function CheckoutPageContent() {
   const planDetails = {
     personal: {
       name: 'Personal Plan',
-      price: 24.99,
-      originalPrice: 39.99,
+      monthlyPrice: 24.99,
+      originalMonthlyPrice: 39.99,
+      annualPrice: 249.90, // 10 months price (2 months free)
+      originalAnnualPrice: 299.88, // 12 months at £24.99
       comingSoon: false,
       features: [
         'Access to all features',
@@ -58,7 +67,8 @@ function CheckoutPageContent() {
     },
     enterprise: {
       name: 'Enterprise Plan',
-      price: 0,
+      monthlyPrice: 0,
+      annualPrice: 0,
       comingSoon: true,
       features: [
         'Everything in Personal Plan',
@@ -71,6 +81,12 @@ function CheckoutPageContent() {
   }
 
   const currentPlan = planDetails[selectedPlan]
+  const currentPrice = selectedBilling === 'annual'
+    ? currentPlan.annualPrice
+    : currentPlan.monthlyPrice
+  const displayPrice = selectedBilling === 'annual'
+    ? `£${currentPlan.annualPrice}/year`
+    : `£${currentPlan.monthlyPrice}/month`
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -85,6 +101,7 @@ function CheckoutPageContent() {
         },
         body: JSON.stringify({
           planType: selectedPlan,
+          billingInterval: selectedBilling,
           userId: user?.uid,
           userEmail: user?.email,
           hasUsedTrial,
