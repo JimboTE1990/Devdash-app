@@ -11,6 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
 import { User, CreditCard, Lock, Calendar, Mail, Crown, Sparkles, Eye, EyeOff } from 'lucide-react'
+import { PasswordStrengthMeter } from '@/components/ui/password-strength-meter'
+import { validatePassword } from '@/lib/password-validation'
 
 export default function ProfilePage() {
   const { user, loading, updateProfile, updatePassword, isTrialActive } = useAuth()
@@ -101,8 +103,10 @@ export default function ProfilePage() {
       return
     }
 
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters')
+    // Validate password strength
+    const strength = validatePassword(newPassword)
+    if (!strength.isValid) {
+      setError('Password does not meet security requirements. ' + strength.feedback.join('. '))
       return
     }
 
@@ -114,6 +118,8 @@ export default function ProfilePage() {
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
+      setShowNewPassword(false)
+      setShowConfirmPassword(false)
     } catch (err: any) {
       setError(err.message || 'Failed to change password')
     } finally {
@@ -434,11 +440,15 @@ export default function ProfilePage() {
                       <button
                         type="button"
                         onClick={() => setShowNewPassword(!showNewPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        tabIndex={-1}
                       >
                         {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
+                    {newPassword && (
+                      <PasswordStrengthMeter password={newPassword} showFeedback={true} />
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">Confirm New Password</Label>
@@ -454,11 +464,22 @@ export default function ProfilePage() {
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        tabIndex={-1}
                       >
                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
+                    {confirmPassword && newPassword !== confirmPassword && (
+                      <p className="text-xs text-red-600 dark:text-red-400">
+                        Passwords do not match
+                      </p>
+                    )}
+                    {confirmPassword && newPassword === confirmPassword && (
+                      <p className="text-xs text-green-600 dark:text-green-400">
+                        ✓ Passwords match
+                      </p>
+                    )}
                   </div>
                   <Button
                     type="submit"

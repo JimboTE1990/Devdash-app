@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
+import { PasswordStrengthMeter } from '@/components/ui/password-strength-meter'
+import { validatePassword } from '@/lib/password-validation'
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true)
@@ -39,6 +41,15 @@ export default function AuthForm() {
           setLoading(false)
           return
         }
+
+        // Validate password strength for registration
+        const strength = validatePassword(password)
+        if (!strength.isValid) {
+          setError('Password does not meet security requirements. ' + strength.feedback.join('. '))
+          setLoading(false)
+          return
+        }
+
         await register(email, password, firstName, lastName)
         // Redirect to email-sent page after registration
         router.push('/auth/email-sent')
@@ -99,8 +110,9 @@ export default function AuthForm() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-foreground transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -171,12 +183,16 @@ export default function AuthForm() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-foreground transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
+                {!isLogin && password && (
+                  <PasswordStrengthMeter password={password} showFeedback={true} />
+                )}
               </div>
               {error && <p className="text-sm text-red-400">{error}</p>}
               <Button type="submit" className="w-full" disabled={loading}>
