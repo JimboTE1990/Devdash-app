@@ -27,7 +27,12 @@ export default function ForgotPasswordPage() {
       await resetPassword(email)
       setSuccess(true)
     } catch (err: any) {
-      setError(err.message || 'Failed to send reset email')
+      // Handle rate limit errors with more user-friendly messaging
+      if (err.message?.toLowerCase().includes('rate') || err.message?.toLowerCase().includes('limit')) {
+        setError('Too many password reset requests. Please wait a few minutes and try again, or contact support if this persists.')
+      } else {
+        setError(err.message || 'Failed to send reset email')
+      }
     } finally {
       setLoading(false)
     }
