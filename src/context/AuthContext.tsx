@@ -34,6 +34,10 @@ export function useAuth() {
 
 // Helper function to fetch user profile from Supabase
 async function fetchUserProfile(supabaseUser: SupabaseUser): Promise<User | null> {
+  if (typeof window !== 'undefined') {
+    console.log('🔍 Fetching profile for user:', supabaseUser.id)
+  }
+
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
@@ -41,13 +45,18 @@ async function fetchUserProfile(supabaseUser: SupabaseUser): Promise<User | null
     .single()
 
   if (error) {
-    console.error('Error fetching profile:', error)
+    console.error('❌ Error fetching profile:', error)
     return null
   }
 
-  if (!profile) return null
+  if (!profile) {
+    if (typeof window !== 'undefined') {
+      console.warn('⚠️ No profile found for user:', supabaseUser.id)
+    }
+    return null
+  }
 
-  return {
+  const userProfile = {
     uid: profile.id,
     email: supabaseUser.email!,
     firstName: profile.first_name,
@@ -61,6 +70,19 @@ async function fetchUserProfile(supabaseUser: SupabaseUser): Promise<User | null
     hasUsedTrial: profile.has_used_trial || false,
     createdAt: new Date(profile.created_at),
   }
+
+  if (typeof window !== 'undefined') {
+    console.log('✅ Profile loaded:', {
+      email: userProfile.email,
+      plan: userProfile.plan,
+      trial_end: userProfile.trialEndDate?.toISOString(),
+      days_remaining: userProfile.trialEndDate
+        ? Math.round((userProfile.trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+        : null
+    })
+  }
+
+  return userProfile
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

@@ -9,6 +9,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
     }
 
+    // Check if profile already exists
+    const { data: existingProfile, error: checkError } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (existingProfile) {
+      console.log(`Profile already exists for user ${userId}, returning success`)
+      return NextResponse.json({
+        success: true,
+        existing: true,
+        profile: {
+          plan: existingProfile.plan,
+          trial_end_date: existingProfile.trial_end_date
+        }
+      })
+    }
+
     // Get user metadata from auth.users
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId)
 
@@ -22,47 +41,51 @@ export async function POST(req: NextRequest) {
     const lastName = authUser.user.user_metadata?.last_name || ''
     const trialDurationDays = authUser.user.user_metadata?.trial_duration_days || 7
 
-    // Log for debugging
-    console.log(`Creating profile for user ${userId}:`, {
-      firstName,
-      lastName,
-      email: authUser.user.email,
-      metadata: authUser.user.user_metadata
-    })
-
     // Calculate trial dates
     const now = new Date()
     const trialEndDate = new Date(now.getTime() + trialDurationDays * 24 * 60 * 60 * 1000)
 
-    // Create or update profile using service role (bypasses RLS)
-    const { error: profileError } = await supabaseAdmin
+    console.log(`Creating NEW profile for user ${userId}:`, {
+      firstName,
+      lastName,
+      email: authUser.user.email,
+      trial_start: now.toISOString(),
+      trial_end: trialEndDate.toISOString(),
+    })
+
+    // Create profile using service role (bypasses RLS)
+    const { data: newProfile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .upsert(
-        {
-          id: userId,
-          first_name: firstName,
-          last_name: lastName,
-          plan: 'free',
-          trial_start_date: now.toISOString(),
-          trial_end_date: trialEndDate.toISOString(),
-          trial_duration_days: trialDurationDays,
-          has_used_trial: false, // User hasn't used trial yet - they're starting it now
-          updated_at: now.toISOString(),
-        },
-        {
-          onConflict: 'id',
-        }
-      )
+      .insert({
+        id: userId,
+        first_name: firstName,
+        last_name: lastName,
+        plan: 'free',
+        trial_start_date: now.toISOString(),
+        trial_end_date: trialEndDate.toISOString(),
+        trial_duration_days: trialDurationDays,
+        has_used_trial: false,
+        updated_at: now.toISOString(),
+      })
+      .select()
+      .single()
 
     if (profileError) {
-      console.error('Error creating/updating profile:', profileError)
-      return NextResponse.json({ error: 'Failed to create profile' }, { status: 500 })
+      console.error('Error creating profile:', profileError)
+      return NextResponse.json({ error: 'Failed to create profile', details: profileError.message }, { status: 500 })
     }
 
-    console.log(`Profile created successfully for user ${userId}`)
-    return NextResponse.json({ success: true })
+    console.log(`✅ Profile created successfully for user ${userId}`)
+    return NextResponse.json({
+      success: true,
+      existing: false,
+      profile: {
+        plan: newProfile.plan,
+        trial_end_date: newProfile.trial_end_date
+      }
+    })
   } catch (err: any) {
     console.error('Error in complete-registration:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error', details: err.message }, { status: 500 })
   }
 }
