@@ -15,49 +15,74 @@ function ConfirmEmailContent() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        // Get the token from URL - support both new and legacy formats
+        // Check if this is a PKCE flow (code parameter) or OTP flow (token_hash parameter)
+        const code = searchParams.get('code')
         const token_hash = searchParams.get('token_hash')
-        const token = searchParams.get('token') // Legacy format
         const type = searchParams.get('type')
 
-        // Accept both 'email' and 'signup' types, and check for either token format
-        const validToken = token_hash || token
-        const validType = type === 'email' || type === 'signup' || type === 'magiclink'
+        let user = null
 
-        if (!validToken || !validType) {
-          console.error('Invalid verification parameters:', { token_hash, token, type })
+        // Handle PKCE flow (most common for email confirmations in 2025)
+        if (code) {
+          console.log('Using PKCE flow with code exchange')
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+
+          if (error) {
+            console.error('Code exchange error:', error)
+            setStatus('error')
+            setMessage(error.message || 'Email verification failed. The link may have expired.')
+            return
+          }
+
+          if (!data.session?.user) {
+            setStatus('error')
+            setMessage('No user session found')
+            return
+          }
+
+          user = data.session.user
+        }
+        // Handle OTP/token_hash flow (legacy or magic link)
+        else if (token_hash && type) {
+          console.log('Using OTP flow with token_hash')
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: type as any,
+          })
+
+          if (error) {
+            console.error('Email verification error:', error)
+            setStatus('error')
+            setMessage(error.message || 'Email verification failed. Please try again.')
+            return
+          }
+
+          if (!data.user) {
+            setStatus('error')
+            setMessage('No user found')
+            return
+          }
+
+          user = data.user
+        }
+        // No valid parameters found
+        else {
+          console.error('Invalid verification parameters:', { code, token_hash, type })
           setStatus('error')
           setMessage('Invalid verification link. Please try requesting a new verification email.')
           return
         }
 
-        // Verify the email with Supabase using appropriate method
-        const { data, error } = await supabase.auth.verifyOtp({
-          token_hash: validToken,
-          type: 'email',
-        })
-
-        if (error) {
-          console.error('Email verification error:', error)
-          setStatus('error')
-          setMessage('Email verification failed. Please try again.')
-          return
-        }
-
-        if (!data.user) {
-          setStatus('error')
-          setMessage('No user found')
-          return
-        }
-
-        // Call our API to complete profile creation
+        // Call our API to complete profile creation and set up trial
         const response = await fetch('/api/auth/complete-registration', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: data.user.id }),
+          body: JSON.stringify({ userId: user.id }),
         })
 
         if (!response.ok) {
+          const errorData = await response.json()
+          console.error('Profile creation error:', errorData)
           setStatus('error')
           setMessage('Failed to complete registration. Please contact support.')
           return
@@ -65,7 +90,7 @@ function ConfirmEmailContent() {
 
         // Success!
         setStatus('success')
-        setMessage('Email verified successfully! Redirecting to dashboard...')
+        setMessage('Email verified successfully! Your 7-day free trial has started. Redirecting to dashboard...')
 
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
