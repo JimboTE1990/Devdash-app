@@ -34,6 +34,8 @@ export function useAuth() {
 
 // Helper function to fetch user profile from Supabase
 async function fetchUserProfile(supabaseUser: SupabaseUser): Promise<User | null> {
+  console.log('🔍 Fetching profile for user:', supabaseUser.id)
+
   const { data: profile, error } = await supabase
     .from('profiles')
     .select('*')
@@ -41,13 +43,16 @@ async function fetchUserProfile(supabaseUser: SupabaseUser): Promise<User | null
     .single()
 
   if (error) {
-    console.error('Error fetching profile:', error)
+    console.error('❌ Error fetching profile:', error)
     return null
   }
 
-  if (!profile) return null
+  if (!profile) {
+    console.warn('⚠️ No profile found for user:', supabaseUser.id)
+    return null
+  }
 
-  return {
+  const userProfile = {
     uid: profile.id,
     email: supabaseUser.email!,
     firstName: profile.first_name,
@@ -61,6 +66,15 @@ async function fetchUserProfile(supabaseUser: SupabaseUser): Promise<User | null
     hasUsedTrial: profile.has_used_trial || false,
     createdAt: new Date(profile.created_at),
   }
+
+  console.log('✅ Profile fetched successfully:', {
+    email: userProfile.email,
+    plan: userProfile.plan,
+    trialEndDate: userProfile.trialEndDate?.toISOString(),
+    isLifetimeFree: userProfile.isLifetimeFree,
+  })
+
+  return userProfile
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -221,12 +235,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user])
 
   const isTrialActive = React.useMemo(() => {
-    if (!user || !user.trialEndDate) return false
-    return new Date() < user.trialEndDate && user.plan === 'free'
+    if (!user || !user.trialEndDate) {
+      console.log('🔍 isTrialActive: false (no user or no trial end date)')
+      return false
+    }
+    const active = new Date() < user.trialEndDate && user.plan === 'free'
+    console.log('🔍 isTrialActive:', active, {
+      now: new Date().toISOString(),
+      trialEndDate: user.trialEndDate.toISOString(),
+      plan: user.plan,
+    })
+    return active
   }, [user])
 
   const isPremium = React.useMemo(() => {
-    return user?.plan === 'premium' || isTrialActive || isLifetimeFree
+    const premium = user?.plan === 'premium' || isTrialActive || isLifetimeFree
+    console.log('🔍 isPremium:', premium, {
+      plan: user?.plan,
+      isTrialActive,
+      isLifetimeFree,
+    })
+    return premium
   }, [user, isTrialActive, isLifetimeFree])
 
   const hasUsedTrial = React.useMemo(() => {
@@ -235,15 +264,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user])
 
   const requiresUpgrade = React.useMemo(() => {
-    if (!user) return false
-    if (user.plan === 'premium' || isLifetimeFree) return false
-    if (!user.trialEndDate) return false
+    if (!user) {
+      console.log('🔍 requiresUpgrade: false (no user)')
+      return false
+    }
+    if (user.plan === 'premium' || isLifetimeFree) {
+      console.log('🔍 requiresUpgrade: false (premium or lifetime free)')
+      return false
+    }
+    if (!user.trialEndDate) {
+      console.log('⚠️ requiresUpgrade: false (no trial end date - this might be a problem!)')
+      return false
+    }
 
     // Trial has expired if current time is AFTER trial end date (not equal to)
-    // Add 1 second buffer to avoid edge case timing issues
     const now = new Date()
     const trialEnd = new Date(user.trialEndDate)
-    return now.getTime() > trialEnd.getTime()
+    const expired = now.getTime() > trialEnd.getTime()
+
+    console.log('🔍 requiresUpgrade:', expired, {
+      now: now.toISOString(),
+      trialEnd: trialEnd.toISOString(),
+      difference: `${Math.round((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} days`,
+    })
+
+    return expired
   }, [user, isLifetimeFree])
 
   const value = {

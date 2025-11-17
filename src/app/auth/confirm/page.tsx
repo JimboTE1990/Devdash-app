@@ -74,6 +74,7 @@ function ConfirmEmailContent() {
         }
 
         // Call our API to complete profile creation and set up trial
+        console.log('📝 Calling complete-registration API for user:', user.id)
         const response = await fetch('/api/auth/complete-registration', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -82,11 +83,29 @@ function ConfirmEmailContent() {
 
         if (!response.ok) {
           const errorData = await response.json()
-          console.error('Profile creation error:', errorData)
+          console.error('❌ Profile creation error:', errorData)
           setStatus('error')
           setMessage('Failed to complete registration. Please contact support.')
           return
         }
+
+        const registrationData = await response.json()
+        console.log('✅ Profile created successfully:', registrationData)
+
+        // Force session refresh to update AuthContext with new profile data
+        // This ensures the user object has trial_end_date before redirect
+        console.log('🔄 Refreshing session to load new profile data...')
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession()
+
+        if (refreshError) {
+          console.warn('⚠️ Session refresh warning:', refreshError)
+          // Continue anyway - AuthContext will eventually sync
+        } else {
+          console.log('✅ Session refreshed successfully')
+        }
+
+        // Small delay to ensure AuthContext picks up the profile update
+        await new Promise(resolve => setTimeout(resolve, 500))
 
         // Success!
         setStatus('success')
@@ -94,6 +113,7 @@ function ConfirmEmailContent() {
 
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
+          console.log('🚀 Redirecting to dashboard with active trial')
           router.push('/dashboard')
         }, 2000)
       } catch (err) {
