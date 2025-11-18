@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
         trial_duration_days: 7,
         has_used_trial: false,
         is_lifetime_free: false,
+        created_at: now.toISOString(),
         updated_at: now.toISOString(),
       })
       .select()
