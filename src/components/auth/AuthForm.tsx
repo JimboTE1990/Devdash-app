@@ -74,7 +74,7 @@ export default function AuthForm() {
       <CardHeader>
         <CardTitle>Welcome to Jimbula</CardTitle>
         <CardDescription>
-          {isLogin ? 'Sign in to your account' : 'Create your account and start your 7-day free trial'}
+          {isLogin ? 'Sign in to your account' : 'Create your account to get started'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -196,10 +196,10 @@ export default function AuthForm() {
               </div>
               {error && <p className="text-sm text-red-400">{error}</p>}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Creating account...' : 'Start 7-Day Free Trial'}
+                {loading ? 'Creating account...' : 'Create Account'}
               </Button>
               <p className="text-xs text-gray-400 text-center">
-                No credit card required. Cancel anytime.
+                Free 7-day trial after email verification • No credit card required
               </p>
             </form>
           </TabsContent>
