@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { UpgradePrompt } from '@/components/upgrade/UpgradePrompt'
+import { ClaimTrialPrompt } from '@/components/upgrade/ClaimTrialPrompt'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -85,7 +86,7 @@ type ViewMode = 'gallery' | 'board'
 type CategoryFilter = 'all' | 'recent' | 'shared' | 'favorites'
 
 export default function IdeasPage() {
-  const { user, requiresUpgrade } = useAuth()
+  const { user, requiresUpgrade, hasAccess } = useAuth()
   const [boards, setBoards] = useState<Board[]>([])
   const [currentBoard, setCurrentBoard] = useState<Board | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('gallery')
@@ -478,6 +479,11 @@ export default function IdeasPage() {
     if (diffDays < 7) return `${diffDays}d ago`
 
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  // Show claim trial prompt if user hasn't claimed their trial yet
+  if (!hasAccess && !requiresUpgrade) {
+    return <ClaimTrialPrompt />
   }
 
   // Show upgrade prompt if trial expired

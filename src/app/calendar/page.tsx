@@ -7,6 +7,7 @@ import { WeekCalendar } from '@/components/calendar/WeekCalendar'
 import { WeekOverview } from '@/components/calendar/WeekOverview'
 import { DayCalendar } from '@/components/calendar/DayCalendar'
 import { UpgradePrompt } from '@/components/upgrade/UpgradePrompt'
+import { ClaimTrialPrompt } from '@/components/upgrade/ClaimTrialPrompt'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -29,7 +30,7 @@ interface Event {
 }
 
 export default function CalendarPage() {
-  const { user, requiresUpgrade } = useAuth()
+  const { user, requiresUpgrade, hasAccess } = useAuth()
   const [events, setEvents] = useState<Event[]>([])
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [showEventDialog, setShowEventDialog] = useState(false)
@@ -176,6 +177,11 @@ export default function CalendarPage() {
   )
 
   const datesWithEvents = events.map(e => e.date)
+
+  // Show claim trial prompt if user hasn't claimed their trial yet
+  if (!hasAccess && !requiresUpgrade) {
+    return <ClaimTrialPrompt />
+  }
 
   // Show upgrade prompt if trial expired
   if (requiresUpgrade) {

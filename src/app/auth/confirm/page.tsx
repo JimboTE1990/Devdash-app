@@ -91,83 +91,20 @@ function ConfirmEmailContent() {
           return
         }
 
-        // Call our API to complete profile creation and set up trial
+        // Email verified successfully!
         if (typeof window !== 'undefined') {
-          console.log('📝 Calling complete-registration API for user:', user.id)
+          console.log('✅ Email verified for user:', user.id)
         }
 
-        const response = await fetch('/api/auth/complete-registration', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id }),
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          console.error('❌ Profile creation error:', errorData)
-          setStatus('error')
-          setMessage('Failed to complete registration. Please contact support.')
-          return
-        }
-
-        const registrationResult = await response.json()
-        if (typeof window !== 'undefined') {
-          console.log('✅ Profile creation response:', registrationResult)
-        }
-
-        // Force session refresh to update AuthContext with new profile data
-        if (typeof window !== 'undefined') {
-          console.log('🔄 Refreshing session...')
-        }
-
-        const { error: refreshError } = await supabase.auth.refreshSession()
-
-        if (refreshError) {
-          console.warn('⚠️ Session refresh warning:', refreshError)
-        } else if (typeof window !== 'undefined') {
-          console.log('✅ Session refreshed successfully')
-        }
-
-        // Get the updated session to verify profile was created
-        const { data: { session: updatedSession } } = await supabase.auth.getSession()
-
-        if (updatedSession?.user && typeof window !== 'undefined') {
-          console.log('👤 Updated session user ID:', updatedSession.user.id)
-
-          // Fetch profile to verify trial dates
-          try {
-            const profileResponse = await supabase
-              .from('profiles')
-              .select('trial_start_date, trial_end_date, plan')
-              .eq('id', updatedSession.user.id)
-              .single()
-
-            if (profileResponse.data) {
-              console.log('📊 Profile data:', {
-                plan: profileResponse.data.plan,
-                trial_start: profileResponse.data.trial_start_date,
-                trial_end: profileResponse.data.trial_end_date,
-                days_remaining: profileResponse.data.trial_end_date
-                  ? Math.round((new Date(profileResponse.data.trial_end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-                  : 'N/A'
-              })
-            }
-          } catch (err) {
-            console.error('Error fetching profile for verification:', err)
-          }
-        }
-
-        // Longer delay to ensure AuthContext picks up the profile update
-        await new Promise(resolve => setTimeout(resolve, 1000))
-
-        // Success!
+        // Success - just redirect to dashboard
+        // User will claim trial there via ClaimTrialPrompt
         setStatus('success')
-        setMessage('Email verified successfully! Your 7-day free trial has started. Redirecting to dashboard...')
+        setMessage('Email verified successfully! Redirecting to dashboard...')
 
-        // Redirect to dashboard after 2 seconds
+        // Redirect to dashboard after brief delay
         setTimeout(() => {
           router.push('/dashboard')
-        }, 2000)
+        }, 1500)
       } catch (err) {
         console.error('Verification error:', err)
         setStatus('error')

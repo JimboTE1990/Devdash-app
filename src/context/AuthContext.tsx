@@ -16,10 +16,13 @@ interface AuthContextType {
   updateProfile: (firstName: string, lastName: string) => Promise<void>
   upgradeToPremium: () => Promise<void>
   resendVerificationEmail: () => Promise<void>
+  claimFreeTrial: () => Promise<void>
   isTrialActive: boolean
   isPremium: boolean
   hasUsedTrial: boolean
   requiresUpgrade: boolean
+  hasClaimedTrial: boolean
+  hasAccess: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -238,6 +241,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     alert('Verification email sent! Please check your inbox.')
   }
 
+  const claimFreeTrial = async () => {
+    if (!user) throw new Error('Must be logged in to claim trial')
+
+    // Call API to create profile with trial
+    const response = await fetch('/api/trial/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.uid }),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || 'Failed to claim trial')
+    }
+
+    // Refresh user profile to get trial dates
+    const { data: sessionData } = await supabase.auth.getSession()
+    if (sessionData.session?.user) {
+      const updatedProfile = await fetchUserProfile(sessionData.session.user)
+      setUser(updatedProfile)
+    }
+  }
+
   const isLifetimeFree = React.useMemo(() => {
     return user?.isLifetimeFree === true
   }, [user])
@@ -267,6 +293,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return now.getTime() > trialEnd.getTime()
   }, [user, isLifetimeFree])
 
+  // Has the user claimed their free trial (i.e., does a profile with trial exist)?
+  const hasClaimedTrial = React.useMemo(() => {
+    if (!user) return false
+    // Profile exists with trial dates = trial has been claimed
+    return !!user.trialStartDate && !!user.trialEndDate
+  }, [user])
+
+  // Does the user have access to features?
+  // Yes if: premium plan OR active trial OR lifetime free
+  // No if: no trial claimed yet OR trial expired and not premium
+  const hasAccess = React.useMemo(() => {
+    if (!user) return false
+    if (user.plan === 'premium' || isLifetimeFree) return true
+    if (!hasClaimedTrial) return false // No trial claimed yet
+    return isTrialActive // Trial claimed, check if still active
+  }, [user, isTrialActive, isLifetimeFree, hasClaimedTrial])
+
   const value = {
     user,
     loading,
@@ -278,10 +321,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateProfile,
     upgradeToPremium,
     resendVerificationEmail,
+    claimFreeTrial,
     isTrialActive,
     isPremium,
     hasUsedTrial,
     requiresUpgrade,
+    hasClaimedTrial,
+    hasAccess,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

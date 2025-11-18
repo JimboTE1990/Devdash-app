@@ -6,10 +6,11 @@ import { useAuth } from '@/context/AuthContext'
 import { Task } from '@/lib/types'
 import { PlannerV2Board } from '@/components/planner/PlannerV2Board'
 import { UpgradePrompt } from '@/components/upgrade/UpgradePrompt'
+import { ClaimTrialPrompt } from '@/components/upgrade/ClaimTrialPrompt'
 import { supabase } from '@/lib/supabase/client'
 
 export default function PlannerV2Page() {
-  const { user, loading, isTrialActive, isPremium, requiresUpgrade } = useAuth()
+  const { user, loading, isTrialActive, isPremium, requiresUpgrade, hasAccess } = useAuth()
   const router = useRouter()
   const [tasks, setTasks] = useState<Task[]>([])
   const [tasksLoading, setTasksLoading] = useState(true)
@@ -106,6 +107,11 @@ export default function PlannerV2Page() {
 
   if (!user) {
     return null
+  }
+
+  // Show claim trial prompt if user hasn't claimed their trial yet
+  if (!hasAccess && !requiresUpgrade) {
+    return <ClaimTrialPrompt />
   }
 
   // Show upgrade prompt if trial expired

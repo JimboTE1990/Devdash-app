@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { UpgradePrompt } from '@/components/upgrade/UpgradePrompt'
+import { ClaimTrialPrompt } from '@/components/upgrade/ClaimTrialPrompt'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -51,7 +52,7 @@ const CURRENCIES = [
 ]
 
 export default function FinancePage() {
-  const { user, requiresUpgrade } = useAuth()
+  const { user, requiresUpgrade, hasAccess } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [showDialog, setShowDialog] = useState(false)
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('income')
@@ -355,6 +356,11 @@ export default function FinancePage() {
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + getAnnualizedAmount(t), 0)
   const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + getAnnualizedAmount(t), 0)
   const netIncome = totalIncome - totalExpenses
+
+  // Show claim trial prompt if user hasn't claimed their trial yet
+  if (!hasAccess && !requiresUpgrade) {
+    return <ClaimTrialPrompt />
+  }
 
   // Show upgrade prompt if trial expired
   if (requiresUpgrade) {
