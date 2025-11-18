@@ -121,10 +121,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    // Check active session
+    // Check active session - don't block on profile creation during page load
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        const profile = await ensureAndFetchProfile(session.user)
+        // Just fetch profile, don't create it yet (speeds up page load)
+        const profile = await fetchUserProfile(session.user)
         setUser(profile)
         setLoading(false)
       } else {
@@ -138,7 +139,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
-        const profile = await ensureAndFetchProfile(session.user)
+        // Just fetch profile during auth state changes
+        const profile = await fetchUserProfile(session.user)
         setUser(profile)
       } else {
         setUser(null)

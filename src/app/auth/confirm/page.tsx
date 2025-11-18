@@ -45,10 +45,18 @@ function ConfirmEmailContent() {
               }
               user = sessionData.session.user
             } else {
-              // Genuine error - no session exists
+              // Provide better error messages
+              let errorMsg = error.message || 'Email verification failed'
+
+              if (error.message?.includes('expired')) {
+                errorMsg = 'This verification link has expired. Please request a new one from the login page.'
+              } else if (error.message?.includes('already been used') || error.message?.includes('invalid')) {
+                errorMsg = 'This verification link has already been used or is invalid. If you\'ve already verified your email, please login.'
+              }
+
               console.error('❌ Code exchange failed and no active session:', error)
               setStatus('error')
-              setMessage(error.message || 'Email verification failed. The link may have expired.')
+              setMessage(errorMsg)
               return
             }
           } else {
@@ -70,8 +78,18 @@ function ConfirmEmailContent() {
 
           if (error) {
             console.error('Email verification error:', error)
+
+            // Provide better error messages
+            let errorMsg = error.message || 'Email verification failed'
+
+            if (error.message?.includes('expired')) {
+              errorMsg = 'This verification link has expired. Please request a new one from the login page.'
+            } else if (error.message?.includes('Token has expired or is invalid')) {
+              errorMsg = 'This verification link has already been used or is invalid. If you\'ve already verified your email, please login.'
+            }
+
             setStatus('error')
-            setMessage(error.message || 'Email verification failed. Please try again.')
+            setMessage(errorMsg)
             return
           }
 
@@ -108,7 +126,7 @@ function ConfirmEmailContent() {
       } catch (err) {
         console.error('Verification error:', err)
         setStatus('error')
-        setMessage('An unexpected error occurred')
+        setMessage('An unexpected error occurred. Please try logging in.')
       }
     }
 
