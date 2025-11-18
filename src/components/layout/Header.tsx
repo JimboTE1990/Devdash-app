@@ -173,7 +173,7 @@ export default function Header() {
                   <Button variant="ghost">Login</Button>
                 </Link>
                 <Link href="/auth">
-                  <Button>Start Free Trial</Button>
+                  <Button>Sign Up</Button>
                 </Link>
               </>
             )}
@@ -297,7 +297,7 @@ export default function Header() {
                       <Button variant="ghost" className="w-full justify-start">Login</Button>
                     </Link>
                     <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full">Start Free Trial</Button>
+                      <Button className="w-full">Sign Up</Button>
                     </Link>
                   </div>
                 </>

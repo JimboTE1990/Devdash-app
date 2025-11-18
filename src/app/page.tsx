@@ -119,7 +119,7 @@ export default function LandingPage() {
               disabled={isLoading}
               className="w-full sm:w-auto max-w-md sm:max-w-none text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group"
             >
-              {isLoading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Start Free Trial'}
+              {isLoading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Get Started Free'}
               <ArrowRight className="ml-2 h-4 sm:h-5 w-4 sm:w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Link href="/pricing" className="w-full sm:w-auto max-w-md sm:max-w-none">
@@ -604,7 +604,7 @@ export default function LandingPage() {
                 disabled={isLoading}
                 className="text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105 group"
               >
-                {isLoading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Start Free Trial'}
+                {isLoading ? 'Loading...' : isAuthenticated ? 'Go to Dashboard' : 'Get Started Free'}
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Link href="/pricing">
