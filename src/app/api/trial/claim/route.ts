@@ -83,7 +83,17 @@ export async function POST(req: NextRequest) {
 
       if (updateError) {
         console.error('[Trial Claim] Error updating profile:', updateError)
-        return NextResponse.json({ error: 'Failed to update trial' }, { status: 500 })
+        console.error('[Trial Claim] Error details:', {
+          code: updateError.code,
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint
+        })
+        return NextResponse.json({
+          error: 'Failed to update trial',
+          details: updateError.message,
+          hint: 'Check if database columns exist: trial_duration_days, has_used_trial'
+        }, { status: 500 })
       }
 
       console.log(`[Trial Claim] Trial updated successfully for user ${userId}`)
@@ -116,7 +126,17 @@ export async function POST(req: NextRequest) {
 
       if (createError) {
         console.error('[Trial Claim] Error creating profile:', createError)
-        return NextResponse.json({ error: 'Failed to create trial' }, { status: 500 })
+        console.error('[Trial Claim] Error details:', {
+          code: createError.code,
+          message: createError.message,
+          details: createError.details,
+          hint: createError.hint
+        })
+        return NextResponse.json({
+          error: 'Failed to create trial',
+          details: createError.message,
+          hint: 'Check if database columns exist: trial_duration_days, has_used_trial, is_lifetime_free'
+        }, { status: 500 })
       }
 
       console.log(`[Trial Claim] Profile created successfully for user ${userId}`)
