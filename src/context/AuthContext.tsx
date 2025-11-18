@@ -92,14 +92,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Helper to ensure profile exists and fetch it
+  const ensureAndFetchProfile = async (supabaseUser: SupabaseUser) => {
+    let profile = await fetchUserProfile(supabaseUser)
+
+    // If no profile exists, create minimal profile
+    if (!profile) {
+      if (typeof window !== 'undefined') {
+        console.log('⚠️ No profile on session init, creating...')
+      }
+
+      try {
+        const response = await fetch('/api/auth/ensure-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: supabaseUser.id }),
+        })
+
+        if (response.ok) {
+          profile = await fetchUserProfile(supabaseUser)
+        }
+      } catch (err) {
+        console.error('Failed to ensure profile:', err)
+      }
+    }
+
+    return profile
+  }
+
   useEffect(() => {
     // Check active session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        fetchUserProfile(session.user).then((profile) => {
-          setUser(profile)
-          setLoading(false)
-        })
+        const profile = await ensureAndFetchProfile(session.user)
+        setUser(profile)
+        setLoading(false)
       } else {
         setUser(null)
         setLoading(false)
@@ -109,11 +136,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
-        fetchUserProfile(session.user).then((profile) => {
-          setUser(profile)
-        })
+        const profile = await ensureAndFetchProfile(session.user)
+        setUser(profile)
       } else {
         setUser(null)
       }
@@ -160,7 +186,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error
 
     if (data.user) {
-      const profile = await fetchUserProfile(data.user)
+      let profile = await fetchUserProfile(data.user)
+
+      // If no profile exists, create one
+      if (!profile) {
+        if (typeof window !== 'undefined') {
+          console.log('⚠️ No profile found, creating minimal profile...')
+        }
+
+        // Call API to ensure profile exists
+        const response = await fetch('/api/auth/ensure-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: data.user.id }),
+        })
+
+        if (response.ok) {
+          // Try fetching profile again
+          profile = await fetchUserProfile(data.user)
+
+          if (typeof window !== 'undefined') {
+            console.log('✅ Profile created, user can now proceed')
+          }
+        } else {
+          console.error('❌ Failed to create profile during login')
+          throw new Error('Failed to create user profile. Please try again.')
+        }
+      }
+
       setUser(profile)
     }
   }
