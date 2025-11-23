@@ -68,6 +68,7 @@ async function fetchUserProfile(supabaseUser: SupabaseUser): Promise<User | null
     trialStartDate: profile.trial_start_date ? new Date(profile.trial_start_date) : undefined,
     trialEndDate: profile.trial_end_date ? new Date(profile.trial_end_date) : undefined,
     subscriptionStartDate: profile.subscription_start_date ? new Date(profile.subscription_start_date) : undefined,
+    billingInterval: profile.billing_interval,
     isLifetimeFree: profile.is_lifetime_free || false,
     trialDurationDays: profile.trial_duration_days || 7,
     hasUsedTrial: profile.has_used_trial || false,

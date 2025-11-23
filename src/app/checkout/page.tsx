@@ -20,7 +20,7 @@ const fadeInUp = {
 function CheckoutPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, hasUsedTrial, upgradeToPremium, loading } = useAuth()
+  const { user, hasUsedTrial, upgradeToPremium, loading, isTrialActive } = useAuth()
 
   const [processing, setProcessing] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<'personal' | 'enterprise'>('personal')
@@ -235,7 +235,10 @@ function CheckoutPageContent() {
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground mb-1">{currentPlan.name}</h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          7-day free trial, then {displayPrice}
+                          7-day free trial • Your {selectedBilling === 'annual' ? 'annual' : 'monthly'} subscription begins when your trial ends
+                        </p>
+                        <p className="text-xs text-primary font-medium">
+                          Then {displayPrice} • Cancel anytime
                         </p>
                         <p className="text-xs text-muted-foreground">
                           Billing Email: {user?.email}
@@ -268,14 +271,16 @@ function CheckoutPageContent() {
                         <Crown className="h-5 w-5" />
                         {selectedPlan === 'enterprise'
                           ? 'Join Enterprise Waitlist'
-                          : canUseTrial
-                            ? 'Start 7-Day Free Trial'
-                            : 'Subscribe to Personal Plan'}
+                          : isTrialActive
+                            ? 'Upgrade to Premium'
+                            : canUseTrial
+                              ? 'Start 7-Day Free Trial'
+                              : 'Subscribe to Personal Plan'}
                       </span>
                     )}
                   </Button>
                   <p className="text-xs text-center text-muted-foreground">
-                    Start your 7-day free trial. No charge today.
+                    Start your 7-day free trial. No charge today. Your subscription will begin when your trial ends. Cancel anytime.
                   </p>
                 </form>
               </CardContent>
@@ -331,7 +336,7 @@ function CheckoutPageContent() {
                       <span className="text-2xl font-bold text-foreground">£0.00</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      You'll be charged £{currentPrice.toFixed(2)} on {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                      Your {selectedBilling === 'annual' ? 'annual' : 'monthly'} subscription will begin on {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when your free trial ends. First charge: £{currentPrice.toFixed(2)}
                     </p>
                   </div>
                 </div>

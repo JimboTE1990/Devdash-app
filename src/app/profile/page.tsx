@@ -301,7 +301,7 @@ export default function ProfilePage() {
                           Your trial ends on {formatDate(user.trialEndDate)}
                         </p>
                         <p className="text-sm text-foreground/70 mt-1">
-                          {daysRemaining} days remaining • Enjoying Jimbula? Upgrade to keep full access!
+                          {daysRemaining} days remaining{user.billingInterval ? ` • Your ${user.billingInterval} subscription begins when your trial ends. Cancel anytime.` : ' • Enjoying Jimbula? Upgrade to keep full access!'}
                         </p>
                       </div>
                     </div>
@@ -318,15 +318,16 @@ export default function ProfilePage() {
                           Active since {formatDate(user.subscriptionStartDate)}
                         </p>
                         <p className="text-sm text-foreground/70 mt-1">
-                          £24.99/month • Renews monthly
+                          {user.billingInterval === 'annual' ? (
+                            <>£249.90/year • Annual billing</>
+                          ) : (
+                            <>£24.99/month • Monthly billing</>
+                          )}
                         </p>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => {
-                            // Open Stripe Customer Portal
-                            window.open('https://billing.stripe.com/p/login/test_3cs9Bk7xc7xc7xc', '_blank')
-                          }}
+                          onClick={() => router.push('/account/subscription')}
                           className="mt-3"
                         >
                           Manage Subscription

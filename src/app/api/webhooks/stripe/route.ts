@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
               subscription_start_date: new Date().toISOString(),
               stripe_customer_id: session.customer as string,
               stripe_subscription_id: session.subscription as string,
+              billing_interval: session.metadata?.billingInterval || 'monthly',
               // Clear deletion fields when user upgrades (reactivates)
               deletion_scheduled_date: null,
               deletion_warning_sent: false,
@@ -74,13 +75,17 @@ export async function POST(req: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         console.log('Subscription created:', subscription.id)
 
-        // Store subscription details
+        // Store subscription details including billing interval
         if (subscription.metadata?.userId) {
+          const interval = subscription.items.data[0]?.price.recurring?.interval
+          const billingInterval = interval === 'year' ? 'annual' : 'monthly'
+
           await supabaseAdmin
             .from('profiles')
             .update({
               stripe_subscription_id: subscription.id,
               stripe_customer_id: subscription.customer as string,
+              billing_interval: billingInterval,
             })
             .eq('id', subscription.metadata.userId)
         }
@@ -99,11 +104,18 @@ export async function POST(req: NextRequest) {
           .single()
 
         if (profile) {
-          // Handle subscription updates (plan changes, etc.)
+          // Get billing interval from subscription
+          const interval = subscription.items.data[0]?.price.recurring?.interval
+          const billingInterval = interval === 'year' ? 'annual' : 'monthly'
+
+          // Handle subscription updates (plan changes, status changes, etc.)
           if (subscription.status === 'active') {
             await supabaseAdmin
               .from('profiles')
-              .update({ plan: 'premium' })
+              .update({
+                plan: 'premium',
+                billing_interval: billingInterval,
+              })
               .eq('id', profile.id)
           } else if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
             await supabaseAdmin
@@ -136,6 +148,7 @@ export async function POST(req: NextRequest) {
             .update({
               plan: 'free',
               stripe_subscription_id: null,
+              billing_interval: null,
               last_downgrade_date: now.toISOString(),
               deletion_scheduled_date: deletionDate.toISOString(),
               deletion_warning_sent: false,

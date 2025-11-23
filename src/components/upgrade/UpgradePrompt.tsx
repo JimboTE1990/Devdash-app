@@ -108,7 +108,7 @@ export function UpgradePrompt({ mode = 'page', showDismiss = false, onDismiss }:
           <DialogFooter className="flex-col sm:flex-col gap-2">
             <Button onClick={handleUpgrade} className="w-full bg-gradient-to-r from-primary to-accent">
               <Crown className="mr-2 h-4 w-4" />
-              Upgrade to Premium - £14.99/month
+              Upgrade to Premium - £24.99/month
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             {showDismiss && onDismiss && (
@@ -193,7 +193,7 @@ export function UpgradePrompt({ mode = 'page', showDismiss = false, onDismiss }:
             <div className="text-center mb-4">
               <p className="text-sm text-muted-foreground mb-1">Premium Plan</p>
               <div className="flex items-baseline justify-center gap-2">
-                <span className="text-4xl font-bold text-primary">£14.99</span>
+                <span className="text-4xl font-bold text-primary">£24.99</span>
                 <span className="text-muted-foreground">/month</span>
               </div>
             </div>
