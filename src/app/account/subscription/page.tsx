@@ -67,20 +67,30 @@ export default function SubscriptionPage() {
       // Get the session token
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       if (sessionError || !session?.access_token) {
+        console.error('Session error:', sessionError)
         throw new Error('Not authenticated')
       }
 
+      console.log('Fetching subscription details...')
       const response = await fetch('/api/subscription/details', {
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
         },
       })
+
+      console.log('Response status:', response.status)
+
       if (!response.ok) {
-        throw new Error('Failed to fetch subscription details')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('API error:', errorData)
+        throw new Error(errorData.error || 'Failed to fetch subscription details')
       }
+
       const data = await response.json()
+      console.log('Subscription data:', data)
       setDetails(data)
     } catch (err: any) {
+      console.error('Fetch error:', err)
       setError(err.message)
     } finally {
       setIsLoading(false)
