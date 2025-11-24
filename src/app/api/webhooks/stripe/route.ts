@@ -45,12 +45,16 @@ export async function POST(req: NextRequest) {
         console.log('Checkout session completed:', session.id)
 
         // Update user to premium in Supabase
-        if (session.metadata?.userId) {
+        if (session.metadata?.userId && session.subscription) {
+          // Get the subscription to get current_period_end
+          const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
+
           const { error } = await supabaseAdmin
             .from('profiles')
             .update({
               plan: 'premium',
-              subscription_start_date: new Date().toISOString(),
+              subscription_start_date: new Date(subscription.current_period_start * 1000).toISOString(),
+              subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
               stripe_customer_id: session.customer as string,
               stripe_subscription_id: session.subscription as string,
               billing_interval: session.metadata?.billingInterval || 'monthly',
@@ -86,6 +90,7 @@ export async function POST(req: NextRequest) {
               stripe_subscription_id: subscription.id,
               stripe_customer_id: subscription.customer as string,
               billing_interval: billingInterval,
+              subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
             })
             .eq('id', subscription.metadata.userId)
         }
@@ -115,12 +120,21 @@ export async function POST(req: NextRequest) {
               .update({
                 plan: 'premium',
                 billing_interval: billingInterval,
+                subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
               })
               .eq('id', profile.id)
           } else if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
+            // For cancelled, use cancel_at if set, otherwise current_period_end
+            const endDate = subscription.cancel_at
+              ? new Date(subscription.cancel_at * 1000).toISOString()
+              : new Date(subscription.current_period_end * 1000).toISOString()
+
             await supabaseAdmin
               .from('profiles')
-              .update({ plan: 'free' })
+              .update({
+                plan: 'free',
+                subscription_end_date: endDate,
+              })
               .eq('id', profile.id)
           }
         }
@@ -149,6 +163,7 @@ export async function POST(req: NextRequest) {
               plan: 'free',
               stripe_subscription_id: null,
               billing_interval: null,
+              subscription_end_date: now.toISOString(), // Mark when subscription ended
               last_downgrade_date: now.toISOString(),
               deletion_scheduled_date: deletionDate.toISOString(),
               deletion_warning_sent: false,

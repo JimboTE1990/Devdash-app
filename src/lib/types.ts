@@ -7,6 +7,7 @@ export interface User {
   trialStartDate?: Date
   trialEndDate?: Date
   subscriptionStartDate?: Date
+  subscriptionEndDate?: Date
   billingInterval?: 'monthly' | 'annual' | null
   isLifetimeFree?: boolean
   trialDurationDays?: number

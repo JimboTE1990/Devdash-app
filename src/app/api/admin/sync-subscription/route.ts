@@ -92,6 +92,9 @@ export async function POST(req: NextRequest) {
         subscription_start_date: subscription.status === 'active'
           ? new Date(subscription.current_period_start * 1000).toISOString()
           : new Date().toISOString(),
+        subscription_end_date: subscription.cancel_at
+          ? new Date(subscription.cancel_at * 1000).toISOString()
+          : new Date(subscription.current_period_end * 1000).toISOString(),
       })
       .eq('id', profile.id)
 

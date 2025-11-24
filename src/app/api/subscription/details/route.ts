@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     // Get user's profile with Stripe subscription ID
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('stripe_subscription_id, stripe_customer_id, billing_interval, plan, trial_end_date, subscription_start_date')
+      .select('stripe_subscription_id, stripe_customer_id, billing_interval, plan, trial_end_date, subscription_start_date, subscription_end_date')
       .eq('id', user.id)
       .single()
 
@@ -53,6 +53,8 @@ export async function GET(req: NextRequest) {
         plan: profile.plan,
         billing_interval: profile.billing_interval,
         trial_end_date: profile.trial_end_date,
+        subscription_start_date: profile.subscription_start_date,
+        subscription_end_date: profile.subscription_end_date,
         subscription: null,
       })
     }
@@ -65,6 +67,7 @@ export async function GET(req: NextRequest) {
       billing_interval: profile.billing_interval,
       trial_end_date: profile.trial_end_date,
       subscription_start_date: profile.subscription_start_date,
+      subscription_end_date: profile.subscription_end_date,
       subscription: {
         id: subscription.id,
         status: subscription.status,
