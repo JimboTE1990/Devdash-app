@@ -59,8 +59,11 @@ export default function SubscriptionPage() {
   useEffect(() => {
     if (user) {
       fetchSubscriptionDetails()
+    } else if (!authLoading) {
+      // If no user and not loading auth, stop the loading state
+      setIsLoading(false)
     }
-  }, [user])
+  }, [user, authLoading])
 
   const fetchSubscriptionDetails = async () => {
     try {
